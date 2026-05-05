@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f3f4f6;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TEST PAGE - If you see this, basic HTML works</h1>
+        <p>Current URL: <span id="url"></span></p>
+        <p>Timestamp: <span id="time"></span></p>
+        <p>Server is responding correctly</p>
+    </div>
+    
+    <script>
+        document.getElementById('url').textContent = window.location.href;
+        document.getElementById('time').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>
