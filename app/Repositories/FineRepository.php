@@ -84,7 +84,10 @@ class FineRepository
         return $fine->update($data);
     }
 
-    public function createFinePayment(array $data): FinePayment
+    /**
+     * Create a payment record.
+     */
+    public function createPayment(array $data): FinePayment
     {
         return FinePayment::create($data);
     }
@@ -137,4 +140,12 @@ class FineRepository
             'total_unpaid_amount' => $totalUnpaidAmount,
         ];
     }
-}
+
+
+    /**
+     * Find a fine by ID.
+     */
+    public function findById(int $id): ?Fine
+    {
+        return Fine::find($id);
+    }}

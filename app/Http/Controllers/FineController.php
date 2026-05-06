@@ -40,13 +40,14 @@ class FineController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $this->fineService->processFinePayment(
-            $fine,
-            $validated['amount'],
-            $validated['payment_method'],
-            $request->user()->id,
-            $validated['notes']
-        );
+        $this->fineService->processFinePayment((int) $fine->id, [
+            'amount' => $validated['amount'],
+            'payment_method' => $validated['payment_method'],
+            'payment_date' => now()->toDateString(),
+            'notes' => $validated['notes'] ?? null,
+            'processed_by' => $request->user()->id,
+            'paid_by' => $fine->member_id,
+        ]);
 
         return redirect()
             ->back()
@@ -64,11 +65,11 @@ class FineController extends Controller
         $borrowingModel = \App\Models\Borrowing::with('items')->findOrFail($borrowing);
         $borrowingItemModel = \App\Models\BorrowingItem::findOrFail($borrowingItem);
 
-        $result = $this->fineService->handleLostBook(
+        $this->fineService->handleLostBook(
             $borrowingModel,
             $borrowingItemModel,
             $validated['lost_quantity'],
-            $validated['notes']
+            $validated['notes'] ?? null
         );
 
         // Dynamic redirect based on user role
@@ -112,13 +113,14 @@ class FineController extends Controller
 
         // For member self-service, they need to contact librarian/admin to actually pay
         // This is just a placeholder - in real scenario, payment would be verified by staff
-        $this->fineService->processFinePayment(
-            $fine,
-            $validated['amount'],
-            $validated['payment_method'],
-            $request->user()->id,
-            $validated['notes']
-        );
+        $this->fineService->processFinePayment((int) $fine->id, [
+            'amount' => $validated['amount'],
+            'payment_method' => $validated['payment_method'],
+            'payment_date' => now()->toDateString(),
+            'notes' => $validated['notes'] ?? null,
+            'processed_by' => $request->user()->id,
+            'paid_by' => $request->user()->id,
+        ]);
 
         return redirect()
             ->route('member.fines.index')

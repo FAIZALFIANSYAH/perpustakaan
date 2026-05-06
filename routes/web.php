@@ -9,6 +9,7 @@ use App\Http\Controllers\FineController;
 use App\Http\Controllers\LibrarianController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MemberProfileController;
+use App\Http\Controllers\Admin\OverdueFineController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;

@@ -110,37 +110,105 @@ class FineService
         ]);
     }
 
-    public function processFinePayment(int $fineId, array $paymentData): FinePayment
+    public function processFinePayment(int $fineId, array $data): FinePayment
     {
-        $fine = Fine::findOrFail($fineId);
+        $fine = $this->fineRepository->findById($fineId);
         
+        if (! $fine) {
+            throw new \Exception('Fine not found');
+        }
+
         if ($fine->status === 'paid') {
             throw ValidationException::withMessages([
-                'fine' => 'Fine has already been paid.'
+                'fine' => 'Fine is already paid.',
             ]);
         }
-        
-        return DB::transaction(function () use ($fine, $paymentData) {
-            // Create payment record
-            $payment = FinePayment::create([
-                'fine_id' => $fine->id,
-                'paid_by' => $fine->member_id,
-                'amount' => $paymentData['amount'],
-                'payment_method' => $paymentData['payment_method'] ?? 'cash',
-                'payment_date' => $paymentData['payment_date'] ?? now(),
-                'notes' => $paymentData['notes'] ?? null,
-                'processed_by' => $paymentData['processed_by'] ?? null,
+
+        $amount = (float) ($data['amount'] ?? 0);
+        if ($amount <= 0) {
+            throw ValidationException::withMessages([
+                'amount' => 'Payment amount must be greater than zero.',
             ]);
-            
-            // Update fine status to paid
-            $fine->update(['status' => 'paid']);
-            
-            // Update borrowing status to 'complete' (book considered returned)
-            $borrowingItem = $fine->borrowingItem;
-            $borrowing = $borrowingItem->borrowing;
-            $borrowing->update(['status' => 'complete']);
-            
-            return $payment->load(['fine', 'fine.member', 'fine.borrowingItem.book']);
+        }
+
+        $remainingAmount = (float) $fine->amount - (float) $fine->paid_amount;
+        if ($amount > $remainingAmount) {
+            throw ValidationException::withMessages([
+                'amount' => "Maximum payable amount is {$remainingAmount}.",
+            ]);
+        }
+
+        return DB::transaction(function () use ($fine, $data, $amount) {
+            $paidBy = $data['paid_by'] ?? $fine->member_id;
+
+            $payment = $this->fineRepository->createPayment([
+                'fine_id' => $fine->id,
+                'amount' => $amount,
+                'payment_method' => $data['payment_method'],
+                'payment_date' => $data['payment_date'] ?? now()->toDateString(),
+                'notes' => $data['notes'] ?? null,
+                'processed_by' => $data['processed_by'] ?? null,
+                'paid_by' => $paidBy,
+            ]);
+
+            $newPaidAmount = (float) $fine->paid_amount + $amount;
+            $newStatus = $newPaidAmount >= (float) $fine->amount ? 'paid' : 'partial';
+
+            $this->fineRepository->updateFine($fine, [
+                'paid_amount' => $newPaidAmount,
+                'status' => $newStatus,
+                'paid_at' => $newStatus === 'paid' ? now()->toDateString() : null,
+            ]);
+
+            if ($fine->borrowingItem?->borrowing) {
+                $borrowingService = app(BorrowingService::class);
+                $borrowingService->updateBorrowingStatusAfterPayment($fine->borrowingItem->borrowing);
+            }
+
+            return $payment->fresh();
+        });
+    }
+
+    public function handleLostBook(Borrowing $borrowing, BorrowingItem $item, int $lostQuantity, ?string $notes = null): array
+    {
+        return DB::transaction(function () use ($borrowing, $item, $lostQuantity, $notes) {
+            if ((int) $item->borrowing_id !== (int) $borrowing->id) {
+                throw ValidationException::withMessages([
+                    'borrowing_item' => 'Borrowing item does not belong to selected borrowing.',
+                ]);
+            }
+
+            $remaining = (int) $item->quantity - (int) $item->returned_quantity;
+            if ($lostQuantity < 1 || $lostQuantity > $remaining) {
+                throw ValidationException::withMessages([
+                    'lost_quantity' => "Lost quantity must be between 1 and {$remaining}.",
+                ]);
+            }
+
+            $fine = $this->createLostBookFine($borrowing, $item, $lostQuantity, $notes);
+
+            // Lost book is treated as "accounted for", so returned_quantity is increased.
+            $item->update([
+                'returned_quantity' => (int) $item->returned_quantity + $lostQuantity,
+                'notes' => trim(($item->notes ? $item->notes . ' | ' : '') . "Lost {$lostQuantity} book(s)." . ($notes ? " {$notes}" : '')),
+            ]);
+
+            $freshBorrowing = $borrowing->fresh('items');
+            $allAccounted = $freshBorrowing->items->every(function (BorrowingItem $borrowingItem) {
+                return (int) $borrowingItem->returned_quantity >= (int) $borrowingItem->quantity;
+            });
+
+            if ($allAccounted) {
+                $borrowingService = app(BorrowingService::class);
+                $borrowingService->updateBorrowingStatusBasedOnFines($freshBorrowing);
+            } else {
+                $freshBorrowing->update(['status' => 'partial']);
+            }
+
+            return [
+                'fine' => $fine->fresh(['borrowingItem.book', 'member']),
+                'borrowing' => $borrowing->fresh(['items.book']),
+            ];
         });
     }
 
@@ -339,4 +407,5 @@ class FineService
             
             return $payment->load(["fine", "fine.member", "fine.borrowingItem.book"]);
         });
-    }}
+    }
+}
