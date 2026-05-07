@@ -30,7 +30,7 @@ class OverdueFineService
         // Get all overdue borrowings without fines
         $overdueBorrowings = Borrowing::with(['items.book', 'member'])
             ->where('due_at', '<', now())
-            ->whereNotIn('status', ['complete', 'cancelled', 'returned'])
+            ->whereNotIn('status', [Borrowing::STATUS_COMPLETE, 'cancelled', Borrowing::STATUS_RETURNED])
             ->whereDoesntHave('items', function ($query) {
                 $query->whereHas('fines');
             })
@@ -81,10 +81,10 @@ class OverdueFineService
                 $fine = $this->fineRepository->createFine([
                     'borrowing_item_id' => $item->id,
                     'member_id' => $borrowing->member_id,
-                    'type' => 'late_return',
+                    'type' => Fine::TYPE_LATE_RETURN,
                     'amount' => $fineAmount,
                     'paid_amount' => 0,
-                    'status' => 'unpaid',
+                    'status' => Fine::STATUS_UNPAID,
                     'due_date' => now()->addDays(7)->toDateString(),
                     'reason' => "Late return: {$item->quantity} book(s), " . 
                                $borrowing->due_at->diffInDays(now()) . " day(s) overdue",
@@ -113,7 +113,7 @@ class OverdueFineService
         if ($returnedQuantity >= $totalQuantity) {
             // All items returned but there are unpaid fines
             $borrowing->update([
-                'status' => 'awaiting_fine_payment',
+                'status' => Borrowing::STATUS_AWAITING_FINE_PAYMENT,
                 'returned_at' => $borrowing->returned_at ?? now()->toDateString(),
             ]);
         }
@@ -131,7 +131,7 @@ class OverdueFineService
         }
 
         // Check if borrowing is in a status that allows fines
-        if (in_array($borrowing->status, ['complete', 'cancelled', 'returned'])) {
+        if (in_array($borrowing->status, [Borrowing::STATUS_COMPLETE, 'cancelled', Borrowing::STATUS_RETURNED], true)) {
             return false;
         }
 
@@ -149,11 +149,11 @@ class OverdueFineService
     public function getOverdueFineStatistics(): array
     {
         $totalOverdue = Borrowing::where('due_at', '<', now())
-            ->whereNotIn('status', ['complete', 'cancelled', 'returned'])
+            ->whereNotIn('status', [Borrowing::STATUS_COMPLETE, 'cancelled', Borrowing::STATUS_RETURNED])
             ->count();
 
         $needProcessing = Borrowing::where('due_at', '<', now())
-            ->whereNotIn('status', ['complete', 'cancelled', 'returned'])
+            ->whereNotIn('status', [Borrowing::STATUS_COMPLETE, 'cancelled', Borrowing::STATUS_RETURNED])
             ->whereDoesntHave('items', function ($query) {
                 $query->whereHas('fines');
             })

@@ -21,7 +21,7 @@ export default function Create({ categories }: Props) {
         isbn: '',
         publish_year: '',
         stock: 0,
-        cover: '',
+        cover: null,
         description: '',
         is_active: true,
     });

@@ -23,19 +23,19 @@ class LibrarianRepository
                 ->count(),
             'returns_today' => Borrowing::query()
                 ->whereDate('returned_at', $today)
-                ->whereIn('status', ['returned', 'complete', 'late_payment'])
+                ->whereIn('status', [Borrowing::STATUS_RETURNED, Borrowing::STATUS_COMPLETE, Borrowing::STATUS_LATE_PAYMENT])
                 ->count(),
             'active_borrowings' => Borrowing::query()
-                ->whereIn('status', ['borrowed', 'partial'])
+                ->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_PARTIAL, Borrowing::STATUS_AWAITING_FINE_PAYMENT])
                 ->count(),
             'overdue_count' => Borrowing::query()
-                ->where('status', 'overdue')
+                ->where('status', Borrowing::STATUS_OVERDUE)
                 ->count(),
             'unpaid_fines' => Fine::query()
-                ->whereIn('status', ['unpaid', 'partial'])
+                ->whereIn('status', [Fine::STATUS_UNPAID, Fine::STATUS_PARTIAL])
                 ->count(),
             'total_unpaid_amount' => Fine::query()
-                ->whereIn('status', ['unpaid', 'partial'])
+                ->whereIn('status', [Fine::STATUS_UNPAID, Fine::STATUS_PARTIAL])
                 ->selectRaw('SUM(amount - paid_amount) as total')
                 ->value('total') ?? 0,
         ];
@@ -54,7 +54,7 @@ class LibrarianRepository
     {
         return Borrowing::query()
             ->with(['member:id,name,email', 'items.book:id,title'])
-            ->whereIn('status', ['borrowed', 'partial'])
+            ->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_PARTIAL, Borrowing::STATUS_AWAITING_FINE_PAYMENT])
             ->whereDate('due_at', now()->toDateString())
             ->get();
     }
@@ -68,7 +68,7 @@ class LibrarianRepository
                 $query->whereHas('items', function($itemQuery) {
                     $itemQuery->where('returned_quantity', '<', DB::raw('quantity'))
                            ->orWhereHas('fines', function($fineQuery) {
-                               $fineQuery->where('status', 'unpaid');
+                               $fineQuery->where('status', Fine::STATUS_UNPAID);
                            });
                 });
             })
@@ -81,7 +81,7 @@ class LibrarianRepository
         return User::query()
             ->role('Member')
             ->with(['borrowings' => function ($query) {
-                $query->whereIn('status', ['borrowed', 'partial']);
+                $query->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_PARTIAL, Borrowing::STATUS_AWAITING_FINE_PAYMENT]);
             }])
             ->when($search, function ($query, $search) {
                 $query->where(function ($innerQuery) use ($search) {
@@ -125,10 +125,10 @@ class LibrarianRepository
         // Borrowing Statistics
         $borrowingsThisMonth = Borrowing::where('borrowed_at', 'like', "{$thisMonth}%")->count();
         $returnsThisMonth = Borrowing::where('returned_at', 'like', "{$thisMonth}%")
-            ->where('status', 'returned')
+            ->where('status', Borrowing::STATUS_RETURNED)
             ->count();
         $overdueCount = Borrowing::query()
-            ->whereIn('status', ['borrowed', 'partial'])
+            ->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_PARTIAL, Borrowing::STATUS_AWAITING_FINE_PAYMENT])
             ->whereDate('due_at', '<', $today)
             ->count();
 

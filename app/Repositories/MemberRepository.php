@@ -17,7 +17,7 @@ class MemberRepository
         return Borrowing::query()
             ->with(['items.book:id,title,author,cover', 'processedBy:id,name'])
             ->where('member_id', $user->id)
-            ->whereIn('status', ['borrowed', 'partial', 'awaiting_fine_payment'])
+            ->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_PARTIAL, Borrowing::STATUS_AWAITING_FINE_PAYMENT])
             ->orderBy('due_at')
             ->get();
     }
@@ -36,11 +36,11 @@ class MemberRepository
         $query = Borrowing::query()->where('member_id', $user->id);
 
         return [
-            'active' => (clone $query)->whereIn('status', ['borrowed', 'partial', 'awaiting_fine_payment'])->count(),
+            'active' => (clone $query)->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_PARTIAL, Borrowing::STATUS_AWAITING_FINE_PAYMENT])->count(),
             'history' => (clone $query)->count(),
-            'returned' => (clone $query)->where('status', 'returned')->count(),
+            'returned' => (clone $query)->where('status', Borrowing::STATUS_RETURNED)->count(),
             'late' => (clone $query)
-                ->whereIn('status', ['borrowed', 'partial', 'awaiting_fine_payment'])
+                ->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_PARTIAL, Borrowing::STATUS_AWAITING_FINE_PAYMENT])
                 ->whereDate('due_at', '<', now()->toDateString())
                 ->count(),
         ];
@@ -83,7 +83,7 @@ class MemberRepository
     {
         return Borrowing::query()
             ->where('member_id', $user->id)
-            ->whereIn('status', ['borrowed', 'partial', 'awaiting_fine_payment'])
+            ->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_PARTIAL, Borrowing::STATUS_AWAITING_FINE_PAYMENT])
             ->whereHas('items', fn ($query) => $query->where('book_id', $bookId))
             ->exists();
     }

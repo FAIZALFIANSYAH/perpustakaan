@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Fine extends Model
 {
+    public const STATUS_UNPAID = 'unpaid';
+    public const STATUS_PARTIAL = 'partial';
+    public const STATUS_PAID = 'paid';
+    public const STATUS_PENDING_PAYMENT = 'pending_payment';
+    public const STATUS_VERIFIED = 'verified';
+
+    public const TYPE_LATE_RETURN = 'late_return';
+    public const TYPE_LOST_BOOK = 'lost_book';
+    public const TYPE_PENALTY = 'penalty';
+
     protected $fillable = [
         'borrowing_item_id',
         'member_id',
@@ -59,13 +69,13 @@ class Fine extends Model
 
     public function isFullyPaid(): bool
     {
-        return $this->status === 'paid';
+        return $this->status === self::STATUS_PAID;
     }
 
     public function markAsPaid(): void
     {
         $this->update([
-            'status' => 'paid',
+            'status' => self::STATUS_PAID,
             'paid_at' => now()->toDateString(),
             'paid_amount' => $this->amount,
         ]);
@@ -73,17 +83,17 @@ class Fine extends Model
 
     public function isUnpaid(): bool
     {
-        return $this->status === 'unpaid';
+        return $this->status === self::STATUS_UNPAID;
     }
 
     public function isPendingPayment(): bool
     {
-        return $this->status === 'pending_payment';
+        return $this->status === self::STATUS_PENDING_PAYMENT;
     }
 
     public function isVerified(): bool
     {
-        return $this->status === 'verified';
+        return $this->status === self::STATUS_VERIFIED;
     }
 
     public function canRequestPayment(): bool

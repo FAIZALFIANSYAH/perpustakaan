@@ -15,7 +15,7 @@ class PaymentVerificationService
     public function initiatePaymentRequest(Fine $fine, User $member, array $data): PaymentVerification
     {
         // Validate fine can be requested for payment
-        if ($fine->status !== 'unpaid') {
+        if ($fine->status !== Fine::STATUS_UNPAID) {
             throw new \InvalidArgumentException('Fine is not eligible for payment request');
         }
 
@@ -45,7 +45,7 @@ class PaymentVerificationService
 
             // Update fine status
             $fine->update([
-                'status' => 'pending_payment',
+                'status' => Fine::STATUS_PENDING_PAYMENT,
                 'payment_verification_id' => $verification->id,
             ]);
 
@@ -53,8 +53,8 @@ class PaymentVerificationService
             $verification->auditLogs()->create([
                 'action' => 'requested',
                 'performed_by' => $member->id,
-                'old_status' => 'unpaid',
-                'new_status' => 'pending_payment',
+                'old_status' => Fine::STATUS_UNPAID,
+                'new_status' => Fine::STATUS_PENDING_PAYMENT,
                 'notes' => 'Payment request initiated',
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
@@ -81,7 +81,7 @@ class PaymentVerificationService
 
             // Update fine to paid status
             $verification->fine->update([
-                'status' => 'paid',
+                'status' => Fine::STATUS_PAID,
                 'paid_amount' => $verification->fine->paid_amount + $verification->requested_amount,
                 'paid_at' => now(),
             ]);

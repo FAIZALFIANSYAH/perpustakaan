@@ -58,7 +58,7 @@ class BorrowingRepository
     {
         return Borrowing::query()
             ->where('member_id', $memberId)
-            ->whereIn('status', ['borrowed', 'partial'])
+            ->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_PARTIAL])
             ->count();
     }
 

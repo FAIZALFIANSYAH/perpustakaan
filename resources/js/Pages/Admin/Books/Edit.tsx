@@ -1,5 +1,5 @@
 import React, { FormEventHandler } from 'react';
-import { useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import BookForm from '@/Components/Books/BookForm';
 import AdminLayout from '@/Layouts/AdminLayout';
 
@@ -28,7 +28,7 @@ type Props = {
 };
 
 export default function Edit({ book, categories }: Props) {
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, processing, errors } = useForm({
         category_id: book.category_id ? String(book.category_id) : '',
         title: book.title ?? '',
         author: book.author ?? '',
@@ -36,14 +36,16 @@ export default function Edit({ book, categories }: Props) {
         isbn: book.isbn ?? '',
         publish_year: book.publish_year ? String(book.publish_year) : '',
         stock: String(book.stock ?? 0),
-        cover: book.cover ?? null,
+        cover: null,
         description: book.description ?? '',
         is_active: Boolean(book.is_active),
     });
 
     const submit: FormEventHandler = (event) => {
         event.preventDefault();
-        put(route('admin.books.update', book.id), {
+
+        router.post(route('admin.books.update.post', book.id), data, {
+            forceFormData: true,
             preserveScroll: true,
         });
     };
@@ -60,6 +62,7 @@ export default function Edit({ book, categories }: Props) {
                 processing={processing}
                 submit={submit}
                 submitLabel="Update Book"
+                initialCover={book.cover}
             />
         </AdminLayout>
     );

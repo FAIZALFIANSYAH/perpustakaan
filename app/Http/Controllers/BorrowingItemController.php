@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\BorrowingItem;
 use App\Models\Borrowing;
-use App\Models\Fine;
 use App\Services\FineService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -17,29 +16,24 @@ class BorrowingItemController extends Controller
     public function reportLost(Request $request, Borrowing $borrowing, BorrowingItem $item): JsonResponse
     {
         try {
-            // Update the item status to lost
-            $item->status = 'lost';
-            $item->save();
-            
-            // Create a lost book fine
+            $validated = $request->validate([
+                'lost_quantity' => 'required|integer|min:1',
+                'notes' => 'nullable|string',
+            ]);
+
             $fineService = app(FineService::class);
-            $fineConfig = $fineService->getActiveFineConfig();
-            
-            if ($fineConfig) {
-                $fine = $fineService->createLostBookFine($borrowing, $item, $fineConfig->lost_book_fine);
-                
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Book reported as lost successfully',
-                    'fine' => $fine
-                ]);
-            }
-            
+            $result = $fineService->handleLostBook(
+                $borrowing,
+                $item,
+                (int) $validated['lost_quantity'],
+                $validated['notes'] ?? null
+            );
+
             return response()->json([
                 'success' => true,
-                'message' => 'Book reported as lost successfully'
+                'message' => 'Book reported as lost successfully',
+                'fine' => $result['fine'] ?? null,
             ]);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

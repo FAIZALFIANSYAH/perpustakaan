@@ -14,7 +14,7 @@ type BookFormData = {
     isbn: string;
     publish_year: string;
     stock: number | string;
-    cover: File | string | null | undefined;
+    cover: File | 'REMOVE' | null | undefined;
     description: string;
     is_active: boolean;
 };
@@ -30,6 +30,7 @@ type BookFormProps = {
     submit: FormEventHandler;
     submitLabel: string;
     backRoute?: string;
+    initialCover?: string | null;
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -51,29 +52,43 @@ export default function BookForm({
     submit,
     submitLabel,
     backRoute = 'admin.books.index',
+    initialCover = null,
 }: BookFormProps) {
     const [coverPreview, setCoverPreview] = useState<string | null>(
-        typeof data.cover === 'string' && data.cover ? (data.cover.startsWith('data:') || data.cover.startsWith('http') ? data.cover : data.cover.startsWith('/storage/') ? data.cover : `/storage/${data.cover}`) : null
+        initialCover ? (initialCover.startsWith('data:') || initialCover.startsWith('http') ? initialCover : initialCover.startsWith('/storage/') ? initialCover : `/storage/${initialCover}`) : null
     );
     const [coverFileName, setCoverFileName] = useState<string>(
-        typeof data.cover === 'string' && data.cover ? data.cover.split('/').pop() || '' : ''
+        initialCover ? initialCover.split('/').pop() || '' : ''
     );
     const [hasFileChanged, setHasFileChanged] = useState<boolean>(false);
+    const [coverClientError, setCoverClientError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Only update from data.cover if it's a string (existing cover) and file hasn't been changed
-        if (!hasFileChanged && typeof data.cover === 'string' && data.cover) {
-            const previewUrl = data.cover.startsWith('data:') || data.cover.startsWith('http') 
-                ? data.cover 
-                : data.cover.startsWith('/storage/') ? data.cover : `/storage/${data.cover}`;
+        if (!hasFileChanged) {
+            const previewUrl = initialCover
+                ? (initialCover.startsWith('data:') || initialCover.startsWith('http')
+                    ? initialCover
+                    : initialCover.startsWith('/storage/')
+                        ? initialCover
+                        : `/storage/${initialCover}`)
+                : null;
             setCoverPreview(previewUrl);
-            setCoverFileName(data.cover.split('/').pop() || '');
+            setCoverFileName(initialCover ? initialCover.split('/').pop() || '' : '');
         }
-    }, [data.cover, hasFileChanged]);
+    }, [initialCover, hasFileChanged]);
 
     const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            const maxSizeBytes = 2 * 1024 * 1024;
+            if (file.size > maxSizeBytes) {
+                setCoverClientError('Ukuran gambar melebihi 2MB. Pilih file yang lebih kecil.');
+                setData('cover', null);
+                e.target.value = '';
+                return;
+            }
+
+            setCoverClientError(null);
             setHasFileChanged(true);
             setData('cover', file);
             setCoverFileName(file.name);
@@ -89,6 +104,7 @@ export default function BookForm({
 
     const removeCover = () => {
         setHasFileChanged(true);
+        setCoverClientError(null);
         setData('cover', 'REMOVE');
         setCoverPreview(null);
         setCoverFileName('');
@@ -184,8 +200,10 @@ export default function BookForm({
                         <input
                             type="number"
                             min="0"
+                            step="1"
                             value={data.stock}
                             onChange={(event) => setData('stock', event.target.value === '' ? '' : event.target.value)}
+                            onWheel={(event) => (event.currentTarget as HTMLInputElement).blur()}
                             className="w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500"
                         />
                         <FieldError message={errors.stock} />
@@ -205,6 +223,7 @@ export default function BookForm({
                                 {coverFileName && (
                                     <p className="mt-1 text-xs text-slate-700 font-medium">Selected: {coverFileName}</p>
                                 )}
+                                {coverClientError && <p className="mt-1 text-sm text-red-600">{coverClientError}</p>}
                                 <FieldError message={errors.cover} />
                             </div>
                             {coverPreview && (

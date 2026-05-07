@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Borrowing;
 use App\Models\BorrowingItem;
+use App\Models\Fine;
 use App\Models\User;
 use App\Repositories\BorrowingRepository;
 use Illuminate\Database\Eloquent\Collection;
@@ -13,7 +14,8 @@ class BorrowingService
 {
     public function __construct(
         protected BorrowingRepository $borrowingRepository,
-        protected FineService $fineService
+        protected FineService $fineService,
+        protected BorrowingStatusPolicy $borrowingStatusPolicy
     ) {}
 
     public function getAllBorrowings(?string $search = null): Collection
@@ -66,7 +68,7 @@ class BorrowingService
                 ]);
             }
 
-            if ($lockedBorrowing->status === 'returned') {
+            if ($lockedBorrowing->status === Borrowing::STATUS_RETURNED) {
                 throw ValidationException::withMessages([
                     'borrowing' => 'This borrowing has already been fully returned.',
                 ]);
@@ -204,7 +206,7 @@ class BorrowingService
         }
 
         $this->borrowingRepository->updateBorrowing($borrowing, [
-            'status' => 'partial',
+            'status' => Borrowing::STATUS_PARTIAL,
         ]);
     }
 
@@ -217,35 +219,20 @@ class BorrowingService
         
         foreach ($borrowing->items as $item) {
             foreach ($item->fines as $fine) {
-                if ($fine->status === 'unpaid') {
+                if ($fine->status === Fine::STATUS_UNPAID) {
                     $hasUnpaidFines = true;
                 }
-                if ($fine->type === 'lost_book') {
+                if ($fine->type === Fine::TYPE_LOST_BOOK) {
                     $hasLostBookFines = true;
                 }
             }
         }
         
-        $newStatus = 'returned'; // Default
-        
-        if ($hasLostBookFines) {
-            if ($hasUnpaidFines) {
-                $newStatus = 'lost';
-            } else {
-                $newStatus = 'complete';
-            }
-        } else {
-            // Regular return logic
-            if ($borrowing->due_at < now()) {
-                if ($hasUnpaidFines) {
-                    $newStatus = 'overdue';
-                } else {
-                    $newStatus = 'late_payment';
-                }
-            } else {
-                $newStatus = 'returned';
-            }
-        }
+        $newStatus = $this->borrowingStatusPolicy->afterReturnSettlement(
+            $borrowing,
+            $hasUnpaidFines,
+            $hasLostBookFines
+        );
         
         $this->borrowingRepository->updateBorrowing($borrowing, [
             'status' => $newStatus,
@@ -261,17 +248,9 @@ class BorrowingService
             return $item->returned_quantity >= $item->quantity;
         });
         
-        $hasUnpaidFines = $borrowing->items->flatMap->fines->contains('status', 'unpaid');
+        $hasUnpaidFines = $borrowing->items->flatMap->fines->contains('status', Fine::STATUS_UNPAID);
         
-        if ($allItemsReturned && !$hasUnpaidFines) {
-            $newStatus = 'complete';
-        } elseif ($allItemsReturned && $hasUnpaidFines) {
-            $newStatus = 'overdue';
-        } elseif (!$allItemsReturned && !$hasUnpaidFines) {
-            $newStatus = 'late_payment';
-        } else {
-            $newStatus = 'borrowed'; // Still has unpaid fines and items not returned
-        }
+        $newStatus = $this->borrowingStatusPolicy->afterFinePayment($allItemsReturned, $hasUnpaidFines);
         
         $this->borrowingRepository->updateBorrowing($borrowing, [
             'status' => $newStatus,
@@ -281,16 +260,17 @@ class BorrowingService
     public function checkAndUpdateOverdueStatus(): void
     {
         $overdueBorrowings = \App\Models\Borrowing::where('due_at', '<', now())
-            ->whereIn('status', ['borrowed', 'partial'])
+            ->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_PARTIAL])
             ->get();
             
         foreach ($overdueBorrowings as $borrowing) {
             $borrowing->load('items.fines');
-            $hasUnpaidFines = $borrowing->items->flatMap->fines->contains('status', 'unpaid');
+            $hasUnpaidFines = $borrowing->items->flatMap->fines->contains('status', Fine::STATUS_UNPAID);
             
-            if ($hasUnpaidFines) {
+            $nextStatus = $this->borrowingStatusPolicy->markOverdueForOpenBorrowing($borrowing, $hasUnpaidFines);
+            if ($nextStatus !== null) {
                 $this->borrowingRepository->updateBorrowing($borrowing, [
-                    'status' => 'overdue'
+                    'status' => $nextStatus
                 ]);
             }
         }
@@ -304,7 +284,7 @@ class BorrowingService
             'processed_by' => $processedBy,
             'borrowed_at' => $data['borrowed_at'],
             'due_at' => $data['due_at'],
-            'status' => 'borrowed',
+            'status' => Borrowing::STATUS_BORROWED,
             'notes' => $data['notes'] ?? null,
         ];
     }
@@ -337,11 +317,11 @@ class BorrowingService
         
         // Generate fines for each overdue item
         foreach ($borrowing->items as $item) {
-            if ($item->fines->count() === 0) {
+            if ($item->fines()->count() === 0) {
                 $fine = $fineService->createLateReturnFine($borrowing, $item, $item->quantity);
                 if ($fine) {
                     // Update borrowing status to overdue
-                    $borrowing->update(['status' => 'overdue']);
+                    $borrowing->update(['status' => Borrowing::STATUS_OVERDUE]);
                 }
             }
         }
@@ -365,13 +345,13 @@ class BorrowingService
             // Get existing fines for this borrowing
             $fines = \App\Models\Fine::whereHas("borrowingItem", function ($query) use ($borrowing) {
                 $query->where("borrowing_id", $borrowing->id);
-            })->where("type", "late_return")->get();
+            })->where("type", Fine::TYPE_LATE_RETURN)->get();
 
             foreach ($fines as $fine) {
                 $penaltyFine = $fineService->createPenaltyFine($fine, $daysOverdue);
                 
                 if ($penaltyFine) {
-                    $borrowing->update(["status" => "complete_with_penalty"]);
+                    $borrowing->update(["status" => Borrowing::STATUS_COMPLETE_WITH_PENALTY]);
                 }
             }
         }

@@ -17,6 +17,7 @@ class DashboardController extends Controller
      */
     public function index(): Response
     {
+        /** @var User $user */
         $user = Auth::user();
         
         // Get statistics based on user role
@@ -40,10 +41,10 @@ class DashboardController extends Controller
         return [
             'total_books' => Book::count(),
             'total_borrowings' => Borrowing::count(),
-            'active_borrowings' => Borrowing::whereIn('status', ['borrowed', 'overdue'])->count(),
-            'overdue_borrowings' => Borrowing::where('status', 'overdue')->count(),
+            'active_borrowings' => Borrowing::whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_OVERDUE])->count(),
+            'overdue_borrowings' => Borrowing::where('status', Borrowing::STATUS_OVERDUE)->count(),
             'total_fines' => Fine::count(),
-            'unpaid_fines' => Fine::where('status', 'unpaid')->sum('amount'),
+            'unpaid_fines' => Fine::where('status', Fine::STATUS_UNPAID)->sum('amount'),
             'total_members' => User::whereHas('roles', function($query) {
                 $query->where('name', 'Member');
             })->count(),
@@ -64,14 +65,14 @@ class DashboardController extends Controller
         return [
             'my_borrowings' => Borrowing::where('member_id', $userId)->count(),
             'active_borrowings' => Borrowing::where('member_id', $userId)
-                ->whereIn('status', ['borrowed', 'overdue'])
+                ->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_OVERDUE])
                 ->count(),
             'overdue_borrowings' => Borrowing::where('member_id', $userId)
-                ->where('status', 'overdue')
+                ->where('status', Borrowing::STATUS_OVERDUE)
                 ->count(),
             'my_fines' => Fine::where('member_id', $userId)->count(),
             'unpaid_fines' => Fine::where('member_id', $userId)
-                ->where('status', 'unpaid')
+                ->where('status', Fine::STATUS_UNPAID)
                 ->sum('amount'),
             'recent_borrowings' => Borrowing::with(['items.book'])
                 ->where('member_id', $userId)

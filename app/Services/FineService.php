@@ -74,10 +74,10 @@ class FineService
         return $this->fineRepository->createFine([
             'borrowing_item_id' => $item->id,
             'member_id' => $borrowing->member_id,
-            'type' => 'late_return',
+            'type' => Fine::TYPE_LATE_RETURN,
             'amount' => $fineAmount,
             'paid_amount' => 0,
-            'status' => 'unpaid',
+            'status' => Fine::STATUS_UNPAID,
             'due_date' => now()->addDays(7)->toDateString(),
             'reason' => "Late return: {$returnQuantity} book(s), " . 
                        $borrowing->due_at->diffInDays(now()) . " day(s) overdue",
@@ -90,9 +90,14 @@ class FineService
 
         $fineAmount = (float) $config->lost_book_fine * $lostQuantity;
 
-        // Apply per-item maximum
-        $maxPerItem = (float) $config->max_fine_per_item * $lostQuantity;
-        $fineAmount = min($fineAmount, $maxPerItem);
+        // Lost-book fine follows lost-book rule and borrowing-level cap (not late-return per-item cap).
+        if (! empty($config->max_fine_per_borrowing)) {
+            $fineAmount = min($fineAmount, (float) $config->max_fine_per_borrowing);
+        }
+
+        if (! empty($config->max_fine_cap)) {
+            $fineAmount = min($fineAmount, (float) $config->max_fine_cap);
+        }
 
         // Use configurable payment deadline
         $dueDate = now()->addDays($config->lost_book_payment_deadline)->toDateString();
@@ -100,10 +105,10 @@ class FineService
         return $this->fineRepository->createFine([
             'borrowing_item_id' => $item->id,
             'member_id' => $borrowing->member_id,
-            'type' => 'lost_book',
+            'type' => Fine::TYPE_LOST_BOOK,
             'amount' => $fineAmount,
             'paid_amount' => 0,
-            'status' => 'unpaid',
+            'status' => Fine::STATUS_UNPAID,
             'due_date' => $dueDate,
             'reason' => "Lost book: {$lostQuantity} book(s)",
             'notes' => $notes,
@@ -118,7 +123,7 @@ class FineService
             throw new \Exception('Fine not found');
         }
 
-        if ($fine->status === 'paid') {
+        if ($fine->status === Fine::STATUS_PAID) {
             throw ValidationException::withMessages([
                 'fine' => 'Fine is already paid.',
             ]);
@@ -152,7 +157,7 @@ class FineService
             ]);
 
             $newPaidAmount = (float) $fine->paid_amount + $amount;
-            $newStatus = $newPaidAmount >= (float) $fine->amount ? 'paid' : 'partial';
+            $newStatus = $newPaidAmount >= (float) $fine->amount ? Fine::STATUS_PAID : Fine::STATUS_PARTIAL;
 
             $this->fineRepository->updateFine($fine, [
                 'paid_amount' => $newPaidAmount,
@@ -202,7 +207,7 @@ class FineService
                 $borrowingService = app(BorrowingService::class);
                 $borrowingService->updateBorrowingStatusBasedOnFines($freshBorrowing);
             } else {
-                $freshBorrowing->update(['status' => 'partial']);
+                $freshBorrowing->update(['status' => Borrowing::STATUS_PARTIAL]);
             }
 
             return [
@@ -214,36 +219,43 @@ class FineService
 
     public function getAllFines(?string $search = null, ?string $status = null)
     {
+        $this->applyPendingPenalties();
         return $this->fineRepository->getAllFines($search, $status);
     }
 
     public function getMemberFines(int $memberId)
     {
+        $this->applyPendingPenalties($memberId);
         return $this->fineRepository->getMemberFines($memberId);
     }
 
     public function getMemberFinesWithVerification(int $memberId)
     {
+        $this->applyPendingPenalties($memberId);
         return $this->fineRepository->getMemberFinesWithVerification($memberId);
     }
 
     public function getUnpaidFinesByMember(int $memberId)
     {
+        $this->applyPendingPenalties($memberId);
         return $this->fineRepository->getUnpaidFinesByMember($memberId);
     }
 
     public function getTotalUnpaidFines(int $memberId): float
     {
+        $this->applyPendingPenalties($memberId);
         return $this->fineRepository->getTotalUnpaidFines($memberId);
     }
 
     public function getFineStatistics(): array
     {
+        $this->applyPendingPenalties();
         return $this->fineRepository->getFineStatistics();
     }
 
     public function getMemberFineStatistics(int $memberId): array
     {
+        $this->applyPendingPenalties($memberId);
         return $this->fineRepository->getMemberFineStatistics($memberId);
     }
 
@@ -326,27 +338,73 @@ class FineService
             return null;
         }
 
-        // Check if penalty fine already exists
+        $reasonTag = "[SRC_FINE_ID:{$originalFine->id}]";
+
+        // Check if penalty fine already exists for this original fine
         $existingPenalty = \App\Models\Fine::where("borrowing_item_id", $originalFine->borrowing_item_id)
             ->where("type", "penalty")
-            ->where("status", "unpaid")
+            ->where('reason', 'like', "%{$reasonTag}%")
+            ->whereIn('status', [Fine::STATUS_UNPAID, Fine::STATUS_PARTIAL])
             ->first();
 
         if ($existingPenalty) {
-            return $existingPenalty;
+            if ((float) $existingPenalty->amount !== (float) $penaltyAmount) {
+                $existingPenalty->update([
+                    'amount' => $penaltyAmount,
+                ]);
+            }
+            return $existingPenalty->fresh();
         }
 
         return $this->fineRepository->createFine([
             "borrowing_item_id" => $originalFine->borrowing_item_id,
             "member_id" => $originalFine->member_id,
-            "type" => "penalty",
+            "type" => Fine::TYPE_PENALTY,
             "amount" => $penaltyAmount,
             "paid_amount" => 0,
-            "status" => "unpaid",
+            "status" => Fine::STATUS_UNPAID,
             "due_date" => now()->addDays(7)->toDateString(),
-            "reason" => "Penalty for late return: {$daysOverdue} days overdue, penalty multiplier applied",
+            "reason" => "{$reasonTag} Penalty applied: {$daysOverdue} day(s) overdue.",
             "notes" => "Original fine: Rp {$originalFine->amount}, Penalty multiplier: " . \App\Models\PenaltyConfig::getActiveConfig()->penalty_multiplier,
         ]);
+    }
+
+    public function applyPendingPenalties(?int $memberId = null): int
+    {
+        $query = Fine::query()
+            ->with(['borrowingItem.borrowing'])
+            ->whereIn('status', [Fine::STATUS_UNPAID, Fine::STATUS_PARTIAL])
+            ->whereIn('type', [Fine::TYPE_LATE_RETURN, Fine::TYPE_LOST_BOOK]);
+
+        if ($memberId !== null) {
+            $query->where('member_id', $memberId);
+        }
+
+        $applied = 0;
+        $fines = $query->get();
+
+        foreach ($fines as $fine) {
+            $borrowing = $fine->borrowingItem?->borrowing;
+            if (! $borrowing) {
+                continue;
+            }
+
+            $daysOverdue = match ($fine->type) {
+                Fine::TYPE_LOST_BOOK => \Illuminate\Support\Carbon::parse($fine->due_date)->startOfDay()->diffInDays(now()->startOfDay(), false),
+                default => $borrowing->due_at->startOfDay()->diffInDays(now()->startOfDay(), false),
+            };
+
+            if (! $this->shouldApplyPenalty($daysOverdue)) {
+                continue;
+            }
+
+            $penaltyFine = $this->createPenaltyFine($fine, $daysOverdue);
+            if ($penaltyFine) {
+                $applied++;
+            }
+        }
+
+        return $applied;
     }
 
     /**
@@ -356,7 +414,7 @@ class FineService
     {
         $fine = \App\Models\Fine::findOrFail($fineId);
         
-        if ($fine->status === "paid") {
+        if ($fine->status === Fine::STATUS_PAID) {
             throw \Illuminate\Validation\ValidationException::withMessages([
                 "fine" => "Fine has already been paid."
             ]);
@@ -375,7 +433,7 @@ class FineService
                 
                 if ($penaltyFine) {
                     // Update borrowing status to indicate penalty
-                    $borrowing->update(["status" => "complete_with_penalty"]);
+                    $borrowing->update(["status" => Borrowing::STATUS_COMPLETE_WITH_PENALTY]);
                 }
             }
             
@@ -391,18 +449,18 @@ class FineService
             ]);
             
             // Update fine status to paid
-            $fine->update(["status" => "paid"]);
+            $fine->update(["status" => Fine::STATUS_PAID]);
             
             // Update borrowing status based on penalty presence
             $hasPenalty = \App\Models\Fine::where("borrowing_item_id", $borrowingItem->id)
-                ->where("type", "penalty")
-                ->where("status", "unpaid")
+                ->where("type", Fine::TYPE_PENALTY)
+                ->where("status", Fine::STATUS_UNPAID)
                 ->exists();
             
             if ($hasPenalty) {
-                $borrowing->update(["status" => "complete_with_penalty"]);
+                $borrowing->update(["status" => Borrowing::STATUS_COMPLETE_WITH_PENALTY]);
             } else {
-                $borrowing->update(["status" => "complete"]);
+                $borrowing->update(["status" => Borrowing::STATUS_COMPLETE]);
             }
             
             return $payment->load(["fine", "fine.member", "fine.borrowingItem.book"]);

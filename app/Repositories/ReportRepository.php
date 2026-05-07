@@ -19,10 +19,10 @@ class ReportRepository
             'total_books' => Book::query()->count(),
             'total_members' => User::query()->role('Member')->count(),
             'total_borrowings' => (clone $borrowingQuery)->count(),
-            'borrowed_active' => (clone $borrowingQuery)->whereIn('status', ['borrowed', 'partial'])->count(),
-            'returned_total' => (clone $borrowingQuery)->where('status', 'returned')->count(),
+            'borrowed_active' => (clone $borrowingQuery)->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_PARTIAL, Borrowing::STATUS_AWAITING_FINE_PAYMENT])->count(),
+            'returned_total' => (clone $borrowingQuery)->where('status', Borrowing::STATUS_RETURNED)->count(),
             'late_borrowings' => (clone $borrowingQuery)
-                ->whereIn('status', ['borrowed', 'partial'])
+                ->whereIn('status', [Borrowing::STATUS_BORROWED, Borrowing::STATUS_PARTIAL, Borrowing::STATUS_AWAITING_FINE_PAYMENT])
                 ->whereDate('due_at', '<', Carbon::today()->toDateString())
                 ->count(),
         ];

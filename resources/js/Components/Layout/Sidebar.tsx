@@ -31,6 +31,7 @@ export default function Sidebar({ collapsed }: Props) {
         ...(isSuperAdmin ? [{ label: 'Borrowings', icon: ClipboardList, href: '/admin/borrowings' }] : []),
         ...(isSuperAdmin ? [{ label: 'Fines', icon: DollarSign, href: '/admin/fines' }] : []),
         ...(isSuperAdmin ? [{ label: 'Fine Config', icon: Settings, href: '/admin/fine-config' }] : []),
+        ...(isSuperAdmin ? [{ label: 'Penalty Config', icon: Settings, href: '/penalty-config' }] : []),
         ...(isSuperAdmin ? [{ label: 'Users', icon: Users, href: '/admin/users' }] : []),
         ...(isSuperAdmin ? [{ label: 'Reports', icon: FileBarChart2, href: '/admin/reports' }] : []),
         ...(isLibrarian ? [{ label: 'Dashboard', icon: Home, href: '/librarian/dashboard' }] : []),

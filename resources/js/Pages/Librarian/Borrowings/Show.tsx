@@ -156,7 +156,7 @@ export default function Show({ borrowing }: Props) {
     const { data, setData, post, processing, errors } = useForm({
         items: borrowing.items.map((item) => ({
             id: item.id,
-            return_quantity: 0,
+            return_quantity: Math.max(0, item.quantity - item.returned_quantity),
         })),
     });
 

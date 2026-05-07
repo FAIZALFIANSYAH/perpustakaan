@@ -17,7 +17,7 @@ class CheckOverdueBorrowings extends Command
         $this->info("Checking overdue borrowings...");
         
         $overdueBorrowings = Borrowing::where('due_at', '<', now())
-            ->where('status', 'borrowed')
+            ->where('status', Borrowing::STATUS_BORROWED)
             ->with(['member', 'items.book', 'items.fines'])
             ->get();
         

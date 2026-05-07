@@ -59,6 +59,7 @@ Route::middleware(['auth', 'role:Librarian|Super Admin'])
         Route::post('/books', [LibrarianController::class, 'booksStore'])->name('books.store');
         Route::get('/books/{book}/edit', [LibrarianController::class, 'booksEdit'])->name('books.edit');
         Route::put('/books/{book}', [LibrarianController::class, 'booksUpdate'])->name('books.update');
+        Route::post('/books/{book}/update', [LibrarianController::class, 'booksUpdate'])->name('books.update.post');
         Route::delete('/books/{book}', [LibrarianController::class, 'booksDestroy'])->name('books.destroy');
         
         // Librarian Borrowings Management
@@ -139,6 +140,7 @@ Route::middleware(['auth', 'role:Super Admin'])
         Route::post('/', [BookController::class, 'store'])->name('store');
         Route::get('/{book}/edit', [BookController::class, 'edit'])->name('edit');
         Route::put('/{book}', [BookController::class, 'update'])->name('update');
+        Route::post('/{book}/update', [BookController::class, 'update'])->name('update.post');
         Route::delete('/{book}', [BookController::class, 'destroy'])->name('destroy');
     });
 

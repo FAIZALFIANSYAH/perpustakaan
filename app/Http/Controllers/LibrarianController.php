@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ReturnBorrowingRequest;
+use App\Http\Requests\StoreBookRequest;
+use App\Http\Requests\StoreBorrowingRequest;
+use App\Http\Requests\UpdateBookRequest;
+use App\Models\Book;
 use App\Services\BookService;
 use App\Services\BorrowingService;
 use App\Services\CategoryService;
@@ -68,22 +73,9 @@ class LibrarianController extends Controller
         ]);
     }
 
-    public function booksStore(Request $request): \Illuminate\Http\RedirectResponse
+    public function booksStore(StoreBookRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'author' => 'required|string|max:255',
-            'publisher' => 'nullable|string|max:255',
-            'isbn' => 'nullable|string|max:255',
-            'publish_year' => 'nullable|digits:4|integer|min:1000|max:' . date('Y'),
-            'stock' => 'required|numeric|min:0',
-            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'description' => 'nullable|string',
-            'is_active' => 'required|boolean',
-        ]);
-
-        $this->bookService->createBook($validated);
+        $this->bookService->createBook($request->validated());
 
         return redirect()->route('librarian.books.index')->with('success', 'Book created successfully.');
     }
@@ -96,39 +88,9 @@ class LibrarianController extends Controller
         ]);
     }
 
-    public function booksUpdate(Request $request, int $book): \Illuminate\Http\RedirectResponse
+    public function booksUpdate(UpdateBookRequest $request, Book $book): \Illuminate\Http\RedirectResponse
     {
-        // Get all request data
-        $data = $request->all();
-        
-        // Remove cover field if it's a string (existing path) to avoid validation error
-        if (isset($data['cover']) && is_string($data['cover'])) {
-            unset($data['cover']);
-            // Replace request data without the cover string
-            $request->replace($data);
-        }
-        
-        // Build validation rules dynamically - only include cover if it's actually a file
-        $rules = [
-            'title' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'author' => 'required|string|max:255',
-            'publisher' => 'nullable|string|max:255',
-            'isbn' => 'nullable|string|max:255',
-            'publish_year' => 'nullable|digits:4|integer|min:1000|max:' . date('Y'),
-            'stock' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'is_active' => 'required|boolean',
-        ];
-        
-        // Only add cover validation if cover is present and it's a file
-        if ($request->hasFile('cover')) {
-            $rules['cover'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
-        }
-        
-        $validated = $request->validate($rules);
-
-        $this->bookService->updateBook($book, $validated);
+        $this->bookService->updateBook($book, $request->validated());
 
         return redirect()->route('librarian.books.index')->with('success', 'Book updated successfully.');
     }
@@ -158,17 +120,9 @@ class LibrarianController extends Controller
         return Inertia::render('Librarian/Borrowings/Create', $this->borrowingService->getBorrowingFormData());
     }
 
-    public function borrowingsStore(Request $request): \Illuminate\Http\RedirectResponse
+    public function borrowingsStore(StoreBorrowingRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $this->borrowingService->createBorrowing($request->validate([
-            'member_id' => 'required|exists:users,id',
-            'borrowed_at' => 'required|date',
-            'due_at' => 'required|date|after_or_equal:borrowed_at',
-            'notes' => 'nullable|string',
-            'items' => 'required|array|min:1',
-            'items.*.book_id' => 'required|exists:books,id',
-            'items.*.quantity' => 'required|integer|min:1',
-        ]), $request->user()->id);
+        $this->borrowingService->createBorrowing($request->validated(), $request->user()->id);
 
         return redirect()->route('librarian.borrowings.index')->with('success', 'Borrowing created successfully.');
     }
@@ -180,17 +134,11 @@ class LibrarianController extends Controller
         ]);
     }
 
-    public function borrowingsReturn(Request $request, int $borrowing): \Illuminate\Http\RedirectResponse
+    public function borrowingsReturn(ReturnBorrowingRequest $request, int $borrowing): \Illuminate\Http\RedirectResponse
     {
         $borrowingModel = \App\Models\Borrowing::findOrFail($borrowing);
-        
-        $validated = $request->validate([
-            'items' => 'required|array',
-            'items.*.id' => 'required|exists:borrowing_items,id',
-            'items.*.return_quantity' => 'required|integer|min:0',
-        ]);
 
-        $this->borrowingService->returnBorrowing($borrowingModel, $validated['items']);
+        $this->borrowingService->returnBorrowing($borrowingModel, $request->validated()['items']);
 
         return redirect()->route('librarian.borrowings.show', $borrowing)->with('success', 'Borrowing returned successfully.');
     }

@@ -25,14 +25,23 @@ class ReturnBorrowingRequest extends FormRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator) {
-            /** @var Borrowing|null $borrowing */
+            /** @var Borrowing|int|string|null $borrowing */
             $borrowing = $this->route('borrowing');
 
             if (! $borrowing) {
                 return;
             }
 
-            $borrowing->loadMissing('items');
+            if (! $borrowing instanceof Borrowing) {
+                $borrowing = Borrowing::with('items')->find($borrowing);
+            } else {
+                $borrowing->loadMissing('items');
+            }
+
+            if (! $borrowing) {
+                $validator->errors()->add('borrowing', 'Borrowing data is invalid.');
+                return;
+            }
 
             $itemsById = $borrowing->items->keyBy('id');
             $hasPositiveReturn = false;

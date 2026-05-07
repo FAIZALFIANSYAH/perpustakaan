@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Borrowing extends Model
 {
+    public const STATUS_BORROWED = 'borrowed';
+    public const STATUS_PARTIAL = 'partial';
+    public const STATUS_RETURNED = 'returned';
+    public const STATUS_OVERDUE = 'overdue';
+    public const STATUS_LATE_PAYMENT = 'late_payment';
+    public const STATUS_LOST = 'lost';
+    public const STATUS_COMPLETE = 'complete';
+    public const STATUS_COMPLETE_WITH_PENALTY = 'complete_with_penalty';
+    public const STATUS_AWAITING_FINE_PAYMENT = 'awaiting_fine_payment';
+
     protected $fillable = [
         'code',
         'member_id',

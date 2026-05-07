@@ -7,6 +7,7 @@ use App\Models\Borrowing;
 use App\Models\Category;
 use App\Models\Fine;
 use App\Models\FineConfig;
+use App\Models\PenaltyConfig;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
@@ -34,6 +35,13 @@ class BorrowingFineFlowTest extends TestCase
             'max_fine_per_borrowing' => 5000000,
             'lost_book_payment_deadline' => 14,
             'max_fine_cap' => null,
+            'is_active' => true,
+        ]);
+
+        PenaltyConfig::create([
+            'penalty_enabled' => true,
+            'grace_period_penalty_days' => 3,
+            'penalty_multiplier' => 2.00,
             'is_active' => true,
         ]);
     }
@@ -119,6 +127,54 @@ class BorrowingFineFlowTest extends TestCase
             'id' => $borrowing->id,
             'status' => 'lost',
         ]);
+    }
+
+    public function test_lost_book_fine_uses_lost_book_amount_not_late_return_item_cap(): void
+    {
+        [$admin, $member, $book] = $this->createBaseActors();
+        $borrowing = $this->createBorrowing($admin, $member, $book, now()->subDays(1)->toDateString(), now()->addDays(3)->toDateString(), 1);
+
+        // Force low late-return cap to ensure lost-book logic does not get cut to 10k.
+        $config = FineConfig::getActiveConfig();
+        $config->update([
+            'lost_book_fine' => 50000,
+            'max_fine_per_item' => 10000,
+            'max_fine_per_borrowing' => 50000,
+        ]);
+
+        $this->actingAs($admin)->post(route('admin.fines.report-lost', [
+            'borrowing' => $borrowing->id,
+            'borrowingItem' => $borrowing->items->first()->id,
+        ]), [
+            'lost_quantity' => 1,
+        ])->assertRedirect();
+
+        $fine = Fine::where('type', Fine::TYPE_LOST_BOOK)->firstOrFail();
+        $this->assertEqualsWithDelta(50000.0, (float) $fine->amount, 0.01);
+    }
+
+    public function test_penalty_config_applies_penalty_fine_for_long_overdue_late_return(): void
+    {
+        [$admin, $member, $book] = $this->createBaseActors();
+        $borrowing = $this->createBorrowing($admin, $member, $book, now()->subDays(30)->toDateString(), now()->subDays(20)->toDateString(), 1);
+
+        $this->actingAs($admin)->post(route('admin.borrowings.return', $borrowing), [
+            'items' => [['id' => $borrowing->items->first()->id, 'return_quantity' => 1]],
+        ])->assertRedirect();
+
+        $lateFine = Fine::where('type', Fine::TYPE_LATE_RETURN)->firstOrFail();
+        $this->assertEqualsWithDelta(40000.0, (float) $lateFine->amount, 0.01);
+
+        app(\App\Services\FineService::class)->applyPendingPenalties($member->id);
+
+        $this->assertDatabaseHas('fines', [
+            'member_id' => $member->id,
+            'type' => Fine::TYPE_PENALTY,
+            'status' => Fine::STATUS_UNPAID,
+        ]);
+
+        $penaltyFine = Fine::where('type', Fine::TYPE_PENALTY)->firstOrFail();
+        $this->assertEqualsWithDelta(80000.0, (float) $penaltyFine->amount, 0.01);
     }
 
     public function test_partial_payment_sets_fine_status_partial(): void

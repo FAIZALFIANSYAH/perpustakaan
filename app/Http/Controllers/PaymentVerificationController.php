@@ -8,6 +8,7 @@ use App\Models\PaymentReceipt;
 use App\Services\PaymentVerificationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -171,7 +172,7 @@ class PaymentVerificationController extends Controller
     }
 
     // Download receipt
-    public function downloadReceipt(PaymentReceipt $receipt): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function downloadReceipt(PaymentReceipt $receipt): StreamedResponse
     {
         $this->authorize('view', $receipt->paymentVerification);
 

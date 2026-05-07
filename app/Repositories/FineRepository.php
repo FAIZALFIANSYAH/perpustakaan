@@ -62,14 +62,14 @@ class FineRepository
     {
         return Fine::with(['borrowingItem.book'])
             ->where('member_id', $memberId)
-            ->whereIn('status', ['unpaid', 'partial'])
+            ->whereIn('status', [Fine::STATUS_UNPAID, Fine::STATUS_PARTIAL])
             ->get();
     }
 
     public function getTotalUnpaidFines(int $memberId): float
     {
         return (float) Fine::where('member_id', $memberId)
-            ->whereIn('status', ['unpaid', 'partial'])
+            ->whereIn('status', [Fine::STATUS_UNPAID, Fine::STATUS_PARTIAL])
             ->selectRaw('SUM(amount - paid_amount) as total')
             ->value('total') ?? 0;
     }
@@ -95,15 +95,15 @@ class FineRepository
     public function getFineStatistics(): array
     {
         $totalFines = Fine::count();
-        $totalUnpaid = Fine::whereIn('status', ['unpaid', 'partial'])->count();
-        $totalPaid = Fine::where('status', 'paid')->count();
+        $totalUnpaid = Fine::whereIn('status', [Fine::STATUS_UNPAID, Fine::STATUS_PARTIAL])->count();
+        $totalPaid = Fine::where('status', Fine::STATUS_PAID)->count();
         
         $totalAmount = Fine::sum('amount');
         $totalPaidAmount = Fine::sum('paid_amount');
         $totalUnpaidAmount = (float) $totalAmount - (float) $totalPaidAmount;
 
-        $lateReturnFines = Fine::where('type', 'late_return')->count();
-        $lostBookFines = Fine::where('type', 'lost_book')->count();
+        $lateReturnFines = Fine::where('type', Fine::TYPE_LATE_RETURN)->count();
+        $lostBookFines = Fine::where('type', Fine::TYPE_LOST_BOOK)->count();
 
         return [
             'total_fines' => $totalFines,
@@ -121,10 +121,10 @@ class FineRepository
     {
         $totalFines = Fine::where('member_id', $memberId)->count();
         $totalUnpaid = Fine::where('member_id', $memberId)
-            ->whereIn('status', ['unpaid', 'partial'])
+            ->whereIn('status', [Fine::STATUS_UNPAID, Fine::STATUS_PARTIAL])
             ->count();
         $totalPaid = Fine::where('member_id', $memberId)
-            ->where('status', 'paid')
+            ->where('status', Fine::STATUS_PAID)
             ->count();
         
         $totalAmount = Fine::where('member_id', $memberId)->sum('amount');

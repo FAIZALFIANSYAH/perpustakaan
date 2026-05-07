@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('penalties:check')->dailyAt('01:00');
         
         // Check and update overdue borrowings daily at 02:00 AM
-        $schedule->command('overdue:check')->dailyAt('02:00');
+        $schedule->command('borrowings:check-overdue')->dailyAt('02:00');
         
         // You can add more scheduled commands here
         // $schedule->command('inspire')->hourly();

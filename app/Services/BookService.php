@@ -68,6 +68,17 @@ class BookService
 
     protected function handleCoverUpload(array $data, ?string $existingCover = null): array
     {
+        $removeCover = (bool) ($data['remove_cover'] ?? false);
+        unset($data['remove_cover']);
+
+        if ($removeCover) {
+            if ($existingCover) {
+                Storage::disk('public')->delete($existingCover);
+            }
+            $data['cover'] = null;
+            return $data;
+        }
+
         // If cover is an UploadedFile, it's a new upload
         if (isset($data['cover']) && $data['cover'] instanceof UploadedFile) {
             // Delete old cover if exists
