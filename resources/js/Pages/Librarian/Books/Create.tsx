@@ -2,6 +2,7 @@ import React, { FormEventHandler } from 'react';
 import { useForm } from '@inertiajs/react';
 import BookForm from '@/Components/Books/BookForm';
 import LibrarianLayout from '@/Layouts/LibrarianLayout';
+import { useTranslation } from 'react-i18next';
 
 type Category = {
     id: number;
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export default function Create({ categories }: Props) {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors } = useForm({
         category_id: '',
         title: '',
@@ -37,15 +39,15 @@ export default function Create({ categories }: Props) {
     return (
         <LibrarianLayout>
             <BookForm
-                title="Create Book"
-                description="Tambah buku baru ke katalog perpustakaan."
+                title={t('create_book')}
+                description={t('create_book_description')}
                 categories={categories}
                 data={data}
                 setData={setData}
                 errors={errors}
                 processing={processing}
                 submit={submit}
-                submitLabel="Save Book"
+                submitLabel={t('save_book')}
                 backRoute="librarian.books.index"
             />
         </LibrarianLayout>

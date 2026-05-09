@@ -1,0 +1,19 @@
+{
+    "member_lookup": "Cari Anggota",
+    "member_lookup_description": "Cari dan lihat data anggota perpustakaan.",
+    "search_by_name_email": "Cari berdasarkan nama atau email...",
+    "search_button": "Cari",
+    "name_col": "Nama",
+    "email_col": "Email",
+    "active_borrowings_col": "Peminjaman Aktif",
+    "status_col": "Status",
+    "joined_col": "Bergabung",
+    "active_suffix": "aktif",
+    "verified": "Terverifikasi",
+    "unverified": "Belum Verifikasi",
+    "no_members_found": "Tidak ada anggota untuk \"{{search}}\"",
+    "no_members_registered": "Belum ada anggota terdaftar.",
+    "previous_page": "Sebelumnya",
+    "next_page": "Selanjutnya",
+    "page_of": "Halaman {{current}} dari {{total}}"
+}

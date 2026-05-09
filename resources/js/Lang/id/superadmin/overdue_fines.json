@@ -1,0 +1,23 @@
+{
+    "overdue_fines_processing": "Pemrosesan Denda Terlambat",
+    "overdue_fines_description": "Otomatis membuat denda untuk peminjaman terlambat yang belum memiliki denda.",
+    "total_overdue": "Total Terlambat",
+    "need_processing": "Perlu Diproses",
+    "already_processed": "Sudah Diproses",
+    "process_overdue_fines": "Proses Denda Terlambat",
+    "overdue_need_processing_title": "{{count}} peminjaman terlambat perlu diproses denda",
+    "overdue_need_processing_desc": "Ini akan membuat denda keterlambatan untuk semua peminjaman terlambat yang belum memiliki denda.",
+    "process_all_overdue": "Proses Semua Denda Terlambat",
+    "processing_button": "Memproses...",
+    "all_caught_up": "Semua sudah terkendali!",
+    "no_overdue_processing_needed": "Tidak ada peminjaman terlambat yang perlu diproses denda saat ini.",
+    "how_overdue_processing_works": "Cara Kerja Pemrosesan Denda Terlambat",
+    "automatic_detection": "Deteksi Otomatis",
+    "automatic_detection_desc": "Sistem mengidentifikasi peminjaman terlambat tanpa denda.",
+    "fine_calculation": "Perhitungan Denda",
+    "fine_calculation_desc": "Menghitung denda keterlambatan berdasarkan hari terlambat dan masa tenggang.",
+    "member_notification": "Notifikasi Anggota",
+    "member_notification_desc": "Denda akan muncul di dasbor anggota dan memblokir peminjaman lebih lanjut.",
+    "status_updates": "Pembaruan Status",
+    "status_updates_desc": "Status peminjaman dapat berubah menjadi \"awaiting_fine_payment\" jika berlaku."
+}

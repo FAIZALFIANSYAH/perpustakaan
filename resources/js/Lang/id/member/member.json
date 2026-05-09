@@ -1,0 +1,16 @@
+{
+    "dashboard": "Dashboard Member",
+    "catalog": "Katalog",
+    "member_area": "Area Anggota",
+    "dashboard_description": "Pantau pinjaman aktif dan status pengembalian Anda.",
+    "view_history": "Lihat Riwayat",
+    "active_borrowings": "Peminjaman Aktif",
+    "borrowing_history": "Riwayat Peminjaman",
+    "returned": "Dikembalikan",
+    "late_borrowings": "Peminjaman Terlambat",
+    "reservations": "Reservasi",
+    "notifications": "Notifikasi",
+    "no_notifications": "Tidak ada notifikasi pinjaman saat ini.",
+    "active_borrowings_description": "Daftar pinjaman yang masih aktif untuk akun Anda.",
+    "no_active_borrowings": "Tidak ada pinjaman aktif saat ini."
+}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, router } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import AdminLayout from '@/Layouts/AdminLayout';
 import SearchBar from '@/Components/SearchBar';
 
@@ -27,8 +28,10 @@ type Props = {
 };
 
 export default function Index({ books, filters }: Props) {
+    const { t } = useTranslation();
+
     const handleDelete = (book: Book) => {
-        if (!window.confirm(`Delete "${book.title}"?`)) {
+        if (!window.confirm(t('confirm_delete_book', { title: book.title }))) {
             return;
         }
 
@@ -40,21 +43,21 @@ export default function Index({ books, filters }: Props) {
             <div className="space-y-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Book Management</h1>
-                        <p className="text-sm text-slate-500">Kelola koleksi buku perpustakaan.</p>
+                        <h1 className="text-2xl font-bold text-slate-900">{t('book_management')}</h1>
+                        <p className="text-sm text-slate-500">{t('book_management_description')}</p>
                     </div>
 
                     <div className="flex items-center gap-3">
                         <SearchBar
                             routeName="admin.books.index"
                             searchValue={filters.search}
-                            placeholder="Search by title, author, ISBN..."
+                            placeholder={t('search_by_title_author_isbn')}
                         />
                         <Link
                             href={route('admin.books.create')}
                             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
                         >
-                            Add Book
+                            {t('add_book')}
                         </Link>
                     </div>
                 </div>
@@ -63,14 +66,14 @@ export default function Index({ books, filters }: Props) {
                     <table className="w-full text-sm">
                         <thead className="bg-slate-50 text-slate-600">
                             <tr>
-                                <th className="p-4 text-left font-semibold">Cover</th>
-                                <th className="p-4 text-left font-semibold">Title</th>
-                                <th className="p-4 text-left font-semibold">Category</th>
-                                <th className="p-4 text-left font-semibold">Author</th>
-                                <th className="p-4 text-left font-semibold">Year</th>
-                                <th className="p-4 text-left font-semibold">Stock</th>
-                                <th className="p-4 text-left font-semibold">Status</th>
-                                <th className="p-4 text-right font-semibold">Action</th>
+                                <th className="p-4 text-left font-semibold">{t('cover_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('title_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('category_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('author_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('year_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('stock_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('status_col')}</th>
+                                <th className="p-4 text-right font-semibold">{t('action_col')}</th>
                             </tr>
                         </thead>
 
@@ -87,7 +90,7 @@ export default function Index({ books, filters }: Props) {
                                                 />
                                             ) : (
                                                 <div className="h-16 w-12 bg-slate-200 rounded-lg flex items-center justify-center">
-                                                    <span className="text-xs text-slate-500">No Cover</span>
+                                                    <span className="text-xs text-slate-500">{t('no_cover')}</span>
                                                 </div>
                                             )}
                                         </td>
@@ -101,7 +104,7 @@ export default function Index({ books, filters }: Props) {
                                         <td className="p-4 text-slate-600">{book.stock}</td>
                                         <td className="p-4">
                                             <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${book.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
-                                                {book.is_active ? 'Active' : 'Inactive'}
+                                                {book.is_active ? t('active_status') : t('inactive_status')}
                                             </span>
                                         </td>
                                         <td className="p-4">
@@ -110,14 +113,14 @@ export default function Index({ books, filters }: Props) {
                                                     href={route('admin.books.edit', book.id)}
                                                     className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                                                 >
-                                                    Edit
+                                                    {t('edit_button')}
                                                 </Link>
                                                 <button
                                                     type="button"
                                                     onClick={() => handleDelete(book)}
                                                     className="rounded-lg bg-rose-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-rose-500"
                                                 >
-                                                    Delete
+                                                    {t('delete_button')}
                                                 </button>
                                             </div>
                                         </td>
@@ -126,7 +129,7 @@ export default function Index({ books, filters }: Props) {
                             ) : (
                                 <tr>
                                     <td colSpan={8} className="p-8 text-center text-slate-500">
-                                        Belum ada data buku
+                                        {t('no_books_data')}
                                     </td>
                                 </tr>
                             )}

@@ -1,5 +1,6 @@
 import React, { useState, FormEventHandler } from 'react';
 import { useForm } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import MemberLayout from '@/Layouts/MemberLayout';
 
 type FinePayment = {
@@ -52,6 +53,7 @@ function PaymentActionButton({ fine }: { fine: Fine }) {
 }
 
 export default function MemberFinesIndex({ fines, statistics, totalUnpaid }: Props) {
+    const { t } = useTranslation();
 
     const formatCurrency = (amount: string | number) => {
         return new Intl.NumberFormat('id-ID').format(parseFloat(amount.toString()));
@@ -70,10 +72,10 @@ export default function MemberFinesIndex({ fines, statistics, totalUnpaid }: Pro
     };
 
     const getTypeLabel = (type: string) => {
-        const labels = {
-            late_return: 'Late Return',
-            lost_book: 'Lost Book',
-            damage: 'Damage',
+        const labels: Record<string, string> = {
+            late_return: t('late_return'),
+            lost_book: t('lost_book'),
+            damage: t('damage'),
         };
         return labels[type] || type;
     };
@@ -82,24 +84,24 @@ export default function MemberFinesIndex({ fines, statistics, totalUnpaid }: Pro
         <MemberLayout>
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">My Fines</h1>
-                    <p className="text-sm text-slate-500">View and manage your library fines.</p>
+                    <h1 className="text-2xl font-bold text-slate-900">{t('my_fines')}</h1>
+                    <p className="text-sm text-slate-500">{t('fines_description')}</p>
                 </div>
 
                 {totalUnpaid > 0 && (
                     <div className="rounded-2xl bg-red-50 p-6 ring-1 ring-red-200">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h3 className="text-lg font-semibold text-red-900">Outstanding Fines</h3>
+                                <h3 className="text-lg font-semibold text-red-900">{t('outstanding_fines')}</h3>
                                 <p className="text-sm text-red-700 mt-1">
-                                    You have unpaid fines that need to be settled. Unpaid fines may block your ability to borrow books.
+                                    {t('outstanding_fines_desc')}
                                 </p>
                             </div>
                             <div className="text-right">
                                 <div className="text-3xl font-bold text-red-600">
                                     Rp {formatCurrency(totalUnpaid)}
                                 </div>
-                                <div className="text-sm text-red-700 mt-1">Total Unpaid</div>
+                                <div className="text-sm text-red-700 mt-1">{t('total_unpaid_label')}</div>
                             </div>
                         </div>
                     </div>
@@ -108,15 +110,15 @@ export default function MemberFinesIndex({ fines, statistics, totalUnpaid }: Pro
                 {/* Statistics */}
                 <div className="grid gap-4 sm:grid-cols-3">
                     <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-                        <div className="text-xs font-medium uppercase tracking-wide text-slate-500">Total Fines</div>
+                        <div className="text-xs font-medium uppercase tracking-wide text-slate-500">{t('total_fines')}</div>
                         <div className="mt-2 text-2xl font-bold text-slate-900">{statistics.total_fines}</div>
                     </div>
                     <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-                        <div className="text-xs font-medium uppercase tracking-wide text-slate-500">Paid</div>
+                        <div className="text-xs font-medium uppercase tracking-wide text-slate-500">{t('paid')}</div>
                         <div className="mt-2 text-2xl font-bold text-green-600">{statistics.total_paid}</div>
                     </div>
                     <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-                        <div className="text-xs font-medium uppercase tracking-wide text-slate-500">Unpaid</div>
+                        <div className="text-xs font-medium uppercase tracking-wide text-slate-500">{t('unpaid')}</div>
                         <div className="mt-2 text-2xl font-bold text-red-600">{statistics.total_unpaid}</div>
                     </div>
                 </div>
@@ -125,7 +127,7 @@ export default function MemberFinesIndex({ fines, statistics, totalUnpaid }: Pro
                 <div className="space-y-4">
                     {fines.length === 0 ? (
                         <div className="rounded-2xl bg-white p-12 text-center shadow-sm ring-1 ring-slate-200">
-                            <p className="text-slate-500">You have no fines. Great job returning books on time!</p>
+                            <p className="text-slate-500">{t('no_fines')}</p>
                         </div>
                     ) : (
                         fines.map((fine) => {
@@ -138,11 +140,11 @@ export default function MemberFinesIndex({ fines, statistics, totalUnpaid }: Pro
                                                 {fine.borrowing_item.book.title}
                                             </h3>
                                             <p className="text-sm text-slate-500 mt-1">
-                                                Fine Type: {getTypeLabel(fine.type)}
+                                                {t('fine_type')}: {getTypeLabel(fine.type)}
                                             </p>
                                         </div>
                                         <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadge(fine.status)}`}>
-                                            {fine.status}
+                                            {t(`status_${fine.status}`)}
                                         </span>
                                     </div>
 
@@ -154,19 +156,19 @@ export default function MemberFinesIndex({ fines, statistics, totalUnpaid }: Pro
 
                                     <div className="grid gap-3 sm:grid-cols-3 mb-4">
                                         <div>
-                                            <div className="text-xs text-slate-500">Total Fine</div>
+                                            <div className="text-xs text-slate-500">{t('total_fine')}</div>
                                             <div className="text-lg font-semibold text-slate-900">
                                                 Rp {formatCurrency(fine.amount)}
                                             </div>
                                         </div>
                                         <div>
-                                            <div className="text-xs text-slate-500">Paid Amount</div>
+                                            <div className="text-xs text-slate-500">{t('paid_amount')}</div>
                                             <div className="text-lg font-semibold text-green-600">
                                                 Rp {formatCurrency(fine.paid_amount)}
                                             </div>
                                         </div>
                                         <div>
-                                            <div className="text-xs text-slate-500">Remaining</div>
+                                            <div className="text-xs text-slate-500">{t('remaining')}</div>
                                             <div className="text-lg font-semibold text-red-600">
                                                 Rp {formatCurrency(remaining)}
                                             </div>
@@ -175,7 +177,7 @@ export default function MemberFinesIndex({ fines, statistics, totalUnpaid }: Pro
 
                                     <div className="flex items-center justify-between pt-4 border-t border-slate-200">
                                         <div className="text-xs text-slate-500">
-                                            Due Date: {new Date(fine.due_date).toLocaleDateString()}
+                                            {t('due_date')}: {new Date(fine.due_date).toLocaleDateString()}
                                         </div>
                                         <PaymentActionButton fine={fine} />
                                     </div>
@@ -183,13 +185,13 @@ export default function MemberFinesIndex({ fines, statistics, totalUnpaid }: Pro
                                     {/* Payment History */}
                                     {fine.payments && fine.payments.length > 0 && (
                                         <div className="mt-4 pt-4 border-t border-slate-200">
-                                            <h4 className="text-sm font-semibold text-slate-900 mb-2">Payment History</h4>
+                                            <h4 className="text-sm font-semibold text-slate-900 mb-2">{t('payment_history')}</h4>
                                             <div className="space-y-2">
                                                 {fine.payments.map((payment) => (
                                                     <div key={payment.id} className="flex items-center justify-between text-sm p-2 bg-slate-50 rounded">
                                                         <div>
                                                             <span className="font-medium">Rp {formatCurrency(payment.amount)}</span>
-                                                            <span className="text-slate-500 ml-2">via {payment.payment_method}</span>
+                                                            <span className="text-slate-500 ml-2">{t('via')} {payment.payment_method}</span>
                                                         </div>
                                                         <div className="text-slate-500">
                                                             {new Date(payment.created_at).toLocaleDateString()}

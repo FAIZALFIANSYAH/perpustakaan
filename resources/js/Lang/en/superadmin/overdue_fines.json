@@ -1,0 +1,23 @@
+{
+    "overdue_fines_processing": "Overdue Fines Processing",
+    "overdue_fines_description": "Automatically create fines for overdue borrowings that don't have fines yet.",
+    "total_overdue": "Total Overdue",
+    "need_processing": "Need Processing",
+    "already_processed": "Already Processed",
+    "process_overdue_fines": "Process Overdue Fines",
+    "overdue_need_processing_title": "{{count}} overdue borrowings need fine processing",
+    "overdue_need_processing_desc": "This will create late return fines for all overdue borrowings that don't have fines yet.",
+    "process_all_overdue": "Process All Overdue Fines",
+    "processing_button": "Processing...",
+    "all_caught_up": "All caught up!",
+    "no_overdue_processing_needed": "No overdue borrowings need fine processing at this time.",
+    "how_overdue_processing_works": "How Overdue Fine Processing Works",
+    "automatic_detection": "Automatic Detection",
+    "automatic_detection_desc": "System identifies overdue borrowings without fines.",
+    "fine_calculation": "Fine Calculation",
+    "fine_calculation_desc": "Calculates late return fines based on days overdue and grace period.",
+    "member_notification": "Member Notification",
+    "member_notification_desc": "Fines will appear in member dashboards and block further borrowing.",
+    "status_updates": "Status Updates",
+    "status_updates_desc": "Borrowing status may change to \"awaiting_fine_payment\" if applicable."
+}

@@ -1,5 +1,6 @@
 import React, { FormEventHandler } from 'react';
 import { useForm } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import AdminLayout from '@/Layouts/AdminLayout';
 
 type FineConfig = {
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export default function FineConfigIndex({ config }: Props) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors } = useForm({
         grace_period_days: config?.grace_period_days ?? 5,
         max_borrowing_days: config?.max_borrowing_days ?? 7,
@@ -47,22 +49,22 @@ export default function FineConfigIndex({ config }: Props) {
         <AdminLayout>
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Fine Configuration</h1>
-                    <p className="text-sm text-slate-500">Configure fine rules and penalties for the library system.</p>
+                    <h1 className="text-2xl font-bold text-slate-900">{t('fine_configuration')}</h1>
+                    <p className="text-sm text-slate-500">{t('fine_config_description')}</p>
                 </div>
 
                 <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                    <h2 className="text-lg font-semibold text-slate-900 mb-4">Fine Rules</h2>
-                    
+                    <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('fine_rules')}</h2>
+
                     <form onSubmit={submit} className="space-y-6">
                         <div className="space-y-8">
                         {/* Borrowing Configuration */}
                         <div>
-                            <h3 className="text-md font-semibold text-slate-900 mb-4">Borrowing Configuration</h3>
+                            <h3 className="text-md font-semibold text-slate-900 mb-4">{t('borrowing_configuration')}</h3>
                             <div className="grid gap-6 md:grid-cols-2">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                                        Standard Borrowing Period (Days)
+                                        {t('standard_borrowing_period')}
                                     </label>
                                     <input
                                         type="number"
@@ -72,7 +74,7 @@ export default function FineConfigIndex({ config }: Props) {
                                         className="w-full rounded-lg border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                                     />
                                     <p className="mt-1 text-xs text-slate-500">
-                                        Default borrowing duration for all books
+                                        {t('standard_borrowing_period_help')}
                                     </p>
                                     {errors.max_borrowing_days && (
                                         <p className="mt-1 text-sm text-red-600">{errors.max_borrowing_days}</p>
@@ -81,7 +83,7 @@ export default function FineConfigIndex({ config }: Props) {
 
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                                        Grace Period (Days)
+                                        {t('grace_period')}
                                     </label>
                                     <input
                                         type="number"
@@ -91,7 +93,7 @@ export default function FineConfigIndex({ config }: Props) {
                                         className="w-full rounded-lg border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                                     />
                                     <p className="mt-1 text-xs text-slate-500">
-                                        Number of days after due date before fines start applying
+                                        {t('grace_period_help')}
                                     </p>
                                     {errors.grace_period_days && (
                                         <p className="mt-1 text-sm text-red-600">{errors.grace_period_days}</p>
@@ -100,7 +102,7 @@ export default function FineConfigIndex({ config }: Props) {
 
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                                        Maximum Billable Days
+                                        {t('maximum_billable_days')}
                                     </label>
                                     <input
                                         type="number"
@@ -110,7 +112,7 @@ export default function FineConfigIndex({ config }: Props) {
                                         className="w-full rounded-lg border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                                     />
                                     <p className="mt-1 text-xs text-slate-500">
-                                        Maximum days for fine calculation (capped system)
+                                        {t('maximum_billable_days_help')}
                                     </p>
                                     {errors.max_billable_days && (
                                         <p className="mt-1 text-sm text-red-600">{errors.max_billable_days}</p>
@@ -119,7 +121,7 @@ export default function FineConfigIndex({ config }: Props) {
 
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                                        Fine Per Day (Rp)
+                                        {t('fine_per_day')}
                                     </label>
                                     <input
                                         type="number"
@@ -130,7 +132,7 @@ export default function FineConfigIndex({ config }: Props) {
                                         className="w-full rounded-lg border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                                     />
                                     <p className="mt-1 text-xs text-slate-500">
-                                        Current: Rp {formatCurrency(data.fine_per_day)} per day per book
+                                        {t('fine_per_day_help', { amount: formatCurrency(data.fine_per_day) })}
                                     </p>
                                     {errors.fine_per_day && (
                                         <p className="mt-1 text-sm text-red-600">{errors.fine_per_day}</p>
@@ -141,11 +143,11 @@ export default function FineConfigIndex({ config }: Props) {
 
                         {/* Fine Limits */}
                         <div>
-                            <h3 className="text-md font-semibold text-slate-900 mb-4">Fine Limits</h3>
+                            <h3 className="text-md font-semibold text-slate-900 mb-4">{t('fine_limits')}</h3>
                             <div className="grid gap-6 md:grid-cols-2">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                                        Lost Book Fine (Rp)
+                                        {t('lost_book_fine')}
                                     </label>
                                     <input
                                         type="number"
@@ -156,7 +158,7 @@ export default function FineConfigIndex({ config }: Props) {
                                         className="w-full rounded-lg border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                                     />
                                     <p className="mt-1 text-xs text-slate-500">
-                                        Current: Rp {formatCurrency(data.lost_book_fine)} per lost book
+                                        {t('lost_book_fine_help', { amount: formatCurrency(data.lost_book_fine) })}
                                     </p>
                                     {errors.lost_book_fine && (
                                         <p className="mt-1 text-sm text-red-600">{errors.lost_book_fine}</p>
@@ -165,7 +167,7 @@ export default function FineConfigIndex({ config }: Props) {
 
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                                        Maximum Fine per Item (Rp)
+                                        {t('max_fine_per_item')}
                                     </label>
                                     <input
                                         type="number"
@@ -176,7 +178,7 @@ export default function FineConfigIndex({ config }: Props) {
                                         className="w-full rounded-lg border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                                     />
                                     <p className="mt-1 text-xs text-slate-500">
-                                        Maximum fine amount per individual item
+                                        {t('max_fine_per_item_help')}
                                     </p>
                                     {errors.max_fine_per_item && (
                                         <p className="mt-1 text-sm text-red-600">{errors.max_fine_per_item}</p>
@@ -185,7 +187,7 @@ export default function FineConfigIndex({ config }: Props) {
 
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                                        Maximum Fine per Borrowing (Rp)
+                                        {t('max_fine_per_borrowing')}
                                     </label>
                                     <input
                                         type="number"
@@ -196,7 +198,7 @@ export default function FineConfigIndex({ config }: Props) {
                                         className="w-full rounded-lg border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                                     />
                                     <p className="mt-1 text-xs text-slate-500">
-                                        Maximum total fine per borrowing transaction
+                                        {t('max_fine_per_borrowing_help')}
                                     </p>
                                     {errors.max_fine_per_borrowing && (
                                         <p className="mt-1 text-sm text-red-600">{errors.max_fine_per_borrowing}</p>
@@ -205,7 +207,7 @@ export default function FineConfigIndex({ config }: Props) {
 
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                                        Lost Book Payment Deadline (Days)
+                                        {t('lost_book_payment_deadline')}
                                     </label>
                                     <input
                                         type="number"
@@ -215,7 +217,7 @@ export default function FineConfigIndex({ config }: Props) {
                                         className="w-full rounded-lg border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                                     />
                                     <p className="mt-1 text-xs text-slate-500">
-                                        Days allowed to pay lost book fine
+                                        {t('lost_book_payment_deadline_help')}
                                     </p>
                                     {errors.lost_book_payment_deadline && (
                                         <p className="mt-1 text-sm text-red-600">{errors.lost_book_payment_deadline}</p>
@@ -224,7 +226,7 @@ export default function FineConfigIndex({ config }: Props) {
 
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                                        Maximum Fine Cap (Rp)
+                                        {t('max_fine_cap')}
                                     </label>
                                     <input
                                         type="number"
@@ -233,10 +235,10 @@ export default function FineConfigIndex({ config }: Props) {
                                         value={data.max_fine_cap}
                                         onChange={(e) => setData('max_fine_cap', e.target.value === '' ? '' : parseInt(e.target.value))}
                                         className="w-full rounded-lg border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
-                                        placeholder="Leave empty for no cap"
+                                        placeholder={t('max_fine_cap_placeholder')}
                                     />
                                     <p className="mt-1 text-xs text-slate-500">
-                                        Maximum fine amount (optional, leave empty for unlimited)
+                                        {t('max_fine_cap_help')}
                                     </p>
                                     {errors.max_fine_cap && (
                                         <p className="mt-1 text-sm text-red-600">{errors.max_fine_cap}</p>
@@ -251,7 +253,7 @@ export default function FineConfigIndex({ config }: Props) {
                                 disabled={processing}
                                 className="rounded-lg bg-slate-900 px-6 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
                             >
-                                {processing ? 'Saving...' : 'Save Configuration'}
+                                {processing ? t('saving_button') : t('save_configuration')}
                             </button>
                         </div>
                         </div>
@@ -259,23 +261,23 @@ export default function FineConfigIndex({ config }: Props) {
                 </div>
 
                 <div className="rounded-2xl bg-blue-50 p-6 ring-1 ring-blue-200">
-                    <h3 className="text-sm font-semibold text-blue-900 mb-2">How Fines Work</h3>
+                    <h3 className="text-sm font-semibold text-blue-900 mb-2">{t('how_fines_work')}</h3>
                     <ul className="space-y-2 text-sm text-blue-800">
                         <li className="flex items-start">
                             <span className="mr-2">•</span>
-                            <span><strong>Late Return Fine:</strong> Calculated based on days overdue × fine per day × quantity. Grace period is applied first.</span>
+                            <span><strong>{t('late_return')}:</strong> {t('late_return_fine_desc')}</span>
                         </li>
                         <li className="flex items-start">
                             <span className="mr-2">•</span>
-                            <span><strong>Lost Book Fine:</strong> Fixed amount per lost book as configured above. Stock will NOT be restored for lost books.</span>
+                            <span><strong>{t('lost_book')}:</strong> {t('lost_book_fine_desc')}</span>
                         </li>
                         <li className="flex items-start">
                             <span className="mr-2">•</span>
-                            <span><strong>Borrowing Status:</strong> If there are unpaid fines, borrowing status will be "awaiting_fine_payment" until all fines are settled.</span>
+                            <span><strong>{t('borrowing_status')}:</strong> {t('borrowing_status_desc')}</span>
                         </li>
                         <li className="flex items-start">
                             <span className="mr-2">•</span>
-                            <span><strong>Member Blocking:</strong> Members with unpaid fines cannot create new borrowings.</span>
+                            <span><strong>{t('member_blocking')}:</strong> {t('member_blocking_desc')}</span>
                         </li>
                     </ul>
                 </div>

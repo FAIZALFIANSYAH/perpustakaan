@@ -1,0 +1,11 @@
+{
+    "my_reservations": "My Reservations",
+    "reservations_description": "List of book reservations you have made.",
+    "browse_catalog": "Browse Catalog",
+    "book": "Book",
+    "status": "Status",
+    "reserved_at": "Reserved At",
+    "fulfilled_at": "Fulfilled At",
+    "no_reservations": "No book reservations yet.",
+    "explore_catalog_cta": "Explore the catalog to get started"
+}

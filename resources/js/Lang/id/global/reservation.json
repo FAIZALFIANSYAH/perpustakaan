@@ -1,0 +1,11 @@
+{
+    "my_reservations": "Reservasi Saya",
+    "reservations_description": "Daftar reservasi buku yang telah Anda buat.",
+    "browse_catalog": "Jelajahi Katalog",
+    "book": "Buku",
+    "status": "Status",
+    "reserved_at": "Direservasi Pada",
+    "fulfilled_at": "Dipenuhi Pada",
+    "no_reservations": "Belum ada reservasi buku.",
+    "explore_catalog_cta": "Jelajahi katalog untuk memulai"
+}

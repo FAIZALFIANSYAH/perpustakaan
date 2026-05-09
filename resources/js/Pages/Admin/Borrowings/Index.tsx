@@ -1,52 +1,5 @@
 import React from 'react';
-
-// Status mapping for display
-const getStatusInfo = (status: string) => {
-    const statusMap: Record<string, { label: string; color: string; bgColor: string }> = {
-        borrowed: {
-            label: "Dipinjam",
-            color: "text-blue-700",
-            bgColor: "bg-blue-100"
-        },
-        overdue: {
-            label: "Terlambat",
-            color: "text-red-700",
-            bgColor: "bg-red-100"
-        },
-        returned: {
-            label: "Dikembalikan",
-            color: "text-green-700",
-            bgColor: "bg-green-100"
-        },
-        late_payment: {
-            label: "Pembayaran Terlambat",
-            color: "text-orange-700",
-            bgColor: "bg-orange-100"
-        },
-        complete: {
-            label: "Selesai",
-            color: "text-emerald-700",
-            bgColor: "bg-emerald-100"
-        },
-        lost: {
-            label: "Hilang",
-            color: "text-purple-700",
-            bgColor: "bg-purple-100"
-        },
-        partial: {
-            label: "Dikembalikan Sebagian",
-            color: "text-yellow-700",
-            bgColor: "bg-yellow-100"
-        }
-    };
-    
-    return statusMap[status] || {
-        label: status,
-        color: "text-gray-700",
-        bgColor: "bg-gray-100"
-    };
-};
-
+import { useTranslation } from 'react-i18next';
 import { Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import SearchBar from '@/Components/SearchBar';
@@ -88,26 +41,74 @@ type Props = {
 };
 
 export default function Index({ borrowings, filters }: Props) {
+    const { t } = useTranslation();
+
+    const getStatusInfo = (status: string) => {
+        const statusMap: Record<string, { label: string; color: string; bgColor: string }> = {
+            borrowed: {
+                label: t('status_borrowed'),
+                color: "text-blue-700",
+                bgColor: "bg-blue-100"
+            },
+            overdue: {
+                label: t('status_overdue'),
+                color: "text-red-700",
+                bgColor: "bg-red-100"
+            },
+            returned: {
+                label: t('status_returned'),
+                color: "text-green-700",
+                bgColor: "bg-green-100"
+            },
+            late_payment: {
+                label: t('status_late_payment'),
+                color: "text-orange-700",
+                bgColor: "bg-orange-100"
+            },
+            complete: {
+                label: t('status_complete'),
+                color: "text-emerald-700",
+                bgColor: "bg-emerald-100"
+            },
+            lost: {
+                label: t('status_lost'),
+                color: "text-purple-700",
+                bgColor: "bg-purple-100"
+            },
+            partial: {
+                label: t('status_partial'),
+                color: "text-yellow-700",
+                bgColor: "bg-yellow-100"
+            }
+        };
+
+        return statusMap[status] || {
+            label: status,
+            color: "text-gray-700",
+            bgColor: "bg-gray-100"
+        };
+    };
+
     return (
         <AdminLayout>
             <div className="space-y-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Borrowing Management</h1>
-                        <p className="text-sm text-slate-500">Kelola transaksi peminjaman buku perpustakaan.</p>
+                        <h1 className="text-2xl font-bold text-slate-900">{t('borrowing_management')}</h1>
+                        <p className="text-sm text-slate-500">{t('borrowing_management_description')}</p>
                     </div>
 
                     <div className="flex items-center gap-3">
                         <SearchBar
                             routeName="admin.borrowings.index"
                             searchValue={filters.search}
-                            placeholder="Search by code, member, book..."
+                            placeholder={t('search_by_code_member_book')}
                         />
                         <Link
                             href={route('admin.borrowings.create')}
                             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
                         >
-                            Add Borrowing
+                            {t('add_borrowing')}
                         </Link>
                     </div>
                 </div>
@@ -116,61 +117,58 @@ export default function Index({ borrowings, filters }: Props) {
                     <table className="w-full text-sm">
                         <thead className="bg-slate-50 text-slate-600">
                             <tr>
-                                <th className="p-4 text-left font-semibold">Code</th>
-                                <th className="p-4 text-left font-semibold">Member</th>
-                                <th className="p-4 text-left font-semibold">Books</th>
-                                <th className="p-4 text-left font-semibold">Borrowed</th>
-                                <th className="p-4 text-left font-semibold">Due</th>
-                                <th className="p-4 text-left font-semibold">Status</th>
-                                <th className="p-4 text-left font-semibold">Processed By</th>
-                                <th className="p-4 text-right font-semibold">Action</th>
+                                <th className="p-4 text-left font-semibold">{t('code_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('member_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('books')}</th>
+                                <th className="p-4 text-left font-semibold">{t('borrowed_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('due_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('status')}</th>
+                                <th className="p-4 text-left font-semibold">{t('processed_by_col')}</th>
+                                <th className="p-4 text-right font-semibold">{t('action_col')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200">
                             {borrowings.length > 0 ? (
-                                borrowings.map((borrowing) => (
-                                    <tr key={borrowing.id} className="align-top">
-                                        <td className="p-4 font-medium text-slate-900">{borrowing.code}</td>
-                                        <td className="p-4 text-slate-600">{borrowing.member?.name ?? '-'}</td>
-                                        <td className="p-4 text-slate-600">
-                                            <div className="space-y-1">
-                                                {borrowing.items.map((item) => (
-                                                    <div key={item.id} className="text-xs">
-                                                        {item.book?.title ?? '-'} x {item.quantity}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </td>
-                                        <td className="p-4 text-slate-600">{borrowing.borrowed_at}</td>
-                                        <td className="p-4 text-slate-600">{borrowing.due_at}</td>
-                                        <td className="p-4">
-                                            <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                                borrowing.status === 'returned' || borrowing.status === 'complete' ? 'bg-emerald-100 text-emerald-700' : 
-                                                borrowing.status === 'partial' ? 'bg-blue-100 text-blue-700' : 
-                                                borrowing.status === 'lost' ? 'bg-red-100 text-red-700' :
-                                                borrowing.status === 'awaiting_fine_payment' ? 'bg-amber-100 text-amber-700' :
-                                                'bg-gray-100 text-gray-700'
-                                            }`}>
-                                                {borrowing.status}
-                                            </span>
-                                        </td>
-                                        <td className="p-4 text-slate-600">{borrowing.processedBy?.name ?? borrowing.processed_by?.name ?? '-'}</td>
-                                        <td className="p-4">
-                                            <div className="flex justify-end">
-                                                <Link
-                                                    href={route('admin.borrowings.show', borrowing.id)}
-                                                    className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
-                                                >
-                                                    Detail
-                                                </Link>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
+                                borrowings.map((borrowing) => {
+                                    const statusInfo = getStatusInfo(borrowing.status);
+                                    return (
+                                        <tr key={borrowing.id} className="align-top">
+                                            <td className="p-4 font-medium text-slate-900">{borrowing.code}</td>
+                                            <td className="p-4 text-slate-600">{borrowing.member?.name ?? '-'}</td>
+                                            <td className="p-4 text-slate-600">
+                                                <div className="space-y-1">
+                                                    {borrowing.items.map((item) => (
+                                                        <div key={item.id} className="text-xs">
+                                                            {item.book?.title ?? '-'} x {item.quantity}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </td>
+                                            <td className="p-4 text-slate-600">{borrowing.borrowed_at}</td>
+                                            <td className="p-4 text-slate-600">{borrowing.due_at}</td>
+                                            <td className="p-4">
+                                                <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusInfo.bgColor} ${statusInfo.color}`}>
+                                                    {statusInfo.label}
+                                                </span>
+                                            </td>
+                                            <td className="p-4 text-slate-600">{borrowing.processedBy?.name ?? borrowing.processed_by?.name ?? '-'}</td>
+                                            <td className="p-4">
+                                                <div className="flex justify-end">
+                                                    <Link
+                                                        href={route('admin.borrowings.show', borrowing.id)}
+                                                        className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                                                    >
+                                                        {t('detail_button')}
+                                                    </Link>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
                             ) : (
                                 <tr>
                                     <td colSpan={8} className="p-8 text-center text-slate-500">
-                                        Belum ada data peminjaman
+                                        {t('no_borrowings_data')}
                                     </td>
                                 </tr>
                             )}

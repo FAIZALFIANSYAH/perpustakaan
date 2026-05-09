@@ -1,0 +1,22 @@
+{
+  "reports": "Laporan",
+  "reports_description": "Ringkasan statistik perpustakaan untuk Super Admin.",
+  "date_from": "Tanggal Mulai",
+  "date_to": "Tanggal Akhir",
+  "apply_filter": "Terapkan Filter",
+  "reset": "Reset",
+  "total_books": "Total Buku",
+  "total_members": "Total Anggota",
+  "total_borrowings": "Total Peminjaman",
+  "active_borrowings": "Peminjaman Aktif",
+  "returned": "Dikembalikan",
+  "late_borrowings": "Peminjaman Terlambat",
+  "recent_borrowings": "Peminjaman Terbaru",
+  "code": "Kode",
+  "member": "Anggota",
+  "borrowed": "Dipinjam",
+  "due": "Jatuh Tempo",
+  "status": "Status",
+  "processed_by": "Diproses Oleh",
+  "no_borrowing_data": "Tidak ada data peminjaman."
+}

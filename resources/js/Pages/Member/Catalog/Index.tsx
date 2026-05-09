@@ -1,5 +1,6 @@
 import React, { FormEventHandler } from 'react';
 import { Link, router, useForm } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import MemberLayout from '@/Layouts/MemberLayout';
 
 type Category = {
@@ -40,16 +41,18 @@ type Props = {
 };
 
 function StockBadge({ book }: { book: Book }) {
+    const { t } = useTranslation();
     const available = book.is_active && book.stock > 0;
 
     return (
         <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${available ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
-            {available ? 'Available' : 'Out of Stock'}
+            {available ? t('available') : t('out_of_stock')}
         </span>
     );
 }
 
 export default function Index({ books, categories, filters }: Props) {
+    const { t } = useTranslation();
     const { data, setData } = useForm({
         search: filters.search ?? '',
         category_id: filters.category_id ? String(filters.category_id) : '',
@@ -70,8 +73,8 @@ export default function Index({ books, categories, filters }: Props) {
         <MemberLayout>
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Book Catalog</h1>
-                    <p className="text-sm text-slate-500">Cari dan lihat koleksi buku yang tersedia untuk anggota.</p>
+                    <h1 className="text-2xl font-bold text-slate-900">{t('book_catalog')}</h1>
+                    <p className="text-sm text-slate-500">{t('catalog_description')}</p>
                 </div>
 
                 <form onSubmit={submitFilter} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
@@ -79,7 +82,7 @@ export default function Index({ books, categories, filters }: Props) {
                         <input
                             value={data.search}
                             onChange={(event) => setData('search', event.target.value)}
-                            placeholder="Search by title or author"
+                            placeholder={t('search_placeholder')}
                             className="w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500"
                         />
                         <select
@@ -87,7 +90,7 @@ export default function Index({ books, categories, filters }: Props) {
                             onChange={(event) => setData('category_id', event.target.value)}
                             className="w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500 lg:max-w-xs"
                         >
-                            <option value="">All categories</option>
+                            <option value="">{t('all_categories')}</option>
                             {categories.map((category) => (
                                 <option key={category.id} value={String(category.id)}>
                                     {category.name}
@@ -99,14 +102,14 @@ export default function Index({ books, categories, filters }: Props) {
                                 type="submit"
                                 className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
                             >
-                                Search
+                                {t('search')}
                             </button>
                             <button
                                 type="button"
                                 onClick={resetFilter}
                                 className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                             >
-                                Reset
+                                {t('reset')}
                             </button>
                         </div>
                     </div>
@@ -126,14 +129,14 @@ export default function Index({ books, categories, filters }: Props) {
                                     ) : (
                                         <div className="flex flex-col items-center">
                                             <span className="text-4xl mb-2">📚</span>
-                                            <span className="text-sm">No Cover</span>
+                                            <span className="text-sm">{t('no_cover')}</span>
                                         </div>
                                     )}
                                 </div>
                                 <div className="space-y-4 p-5">
                                     <div>
                                         <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                                            {book.category?.name ?? 'Uncategorized'}
+                                            {book.category?.name ?? t('uncategorized')}
                                         </div>
                                         <h2 className="mt-2 text-lg font-semibold text-slate-900">{book.title}</h2>
                                         <p className="mt-1 text-sm text-slate-600">{book.author}</p>
@@ -141,21 +144,21 @@ export default function Index({ books, categories, filters }: Props) {
 
                                     <div className="flex items-center justify-between">
                                         <StockBadge book={book} />
-                                        <span className="text-xs text-slate-500">Stock: {book.stock}</span>
+                                        <span className="text-xs text-slate-500">{t('stock_label')}: {book.stock}</span>
                                     </div>
 
                                     <Link
                                         href={route('member.catalog.show', book.id)}
                                         className="inline-flex w-full items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
                                     >
-                                        View Detail
+                                        {t('view_detail')}
                                     </Link>
                                 </div>
                             </div>
                         ))
                     ) : (
                         <div className="col-span-full rounded-2xl bg-white p-8 text-center text-slate-500 shadow-sm ring-1 ring-slate-200">
-                            No books found for the current filter.
+                            {t('no_books_found')}
                         </div>
                     )}
                 </div>

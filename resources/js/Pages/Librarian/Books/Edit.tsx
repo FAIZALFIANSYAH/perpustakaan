@@ -2,6 +2,7 @@ import React, { FormEventHandler } from 'react';
 import { router, useForm } from '@inertiajs/react';
 import BookForm from '@/Components/Books/BookForm';
 import LibrarianLayout from '@/Layouts/LibrarianLayout';
+import { useTranslation } from 'react-i18next';
 
 type Category = {
     id: number;
@@ -28,6 +29,7 @@ type Props = {
 };
 
 export default function Edit({ book, categories }: Props) {
+    const { t } = useTranslation();
     const { data, setData, processing, errors } = useForm({
         category_id: book.category_id ? String(book.category_id) : '',
         title: book.title ?? '',
@@ -53,15 +55,15 @@ export default function Edit({ book, categories }: Props) {
     return (
         <LibrarianLayout>
             <BookForm
-                title="Edit Book"
-                description="Perbarui informasi buku yang sudah ada."
+                title={t('edit_book')}
+                description={t('edit_book_description')}
                 categories={categories}
                 data={data}
                 setData={setData}
                 errors={errors}
                 processing={processing}
                 submit={submit}
-                submitLabel="Update Book"
+                submitLabel={t('update_book')}
                 backRoute="librarian.books.index"
                 initialCover={book.cover}
             />

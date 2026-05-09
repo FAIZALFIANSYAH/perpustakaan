@@ -1,0 +1,18 @@
+{
+    "penalty_configuration": "Penalty Configuration",
+    "penalty_config_description": "Configure extra penalty behavior for overdue fines after grace period.",
+    "enable_penalty_system": "Enable Penalty System",
+    "enable_penalty_system_help": "Apply multiplier when overdue crosses threshold.",
+    "configuration_active": "Configuration Active",
+    "configuration_active_help": "System uses this configuration immediately.",
+    "grace_period_penalty_days": "Grace Period Penalty Days",
+    "grace_period_penalty_days_help": "Penalty applies starting day {{day}}.",
+    "penalty_multiplier": "Penalty Multiplier",
+    "penalty_multiplier_help": "Allowed range 1.00 - 10.00.",
+    "calculation_preview": "Calculation Preview",
+    "base_fine": "Base fine",
+    "multiplier_label": "Multiplier",
+    "penalty_fine": "Penalty fine",
+    "save_penalty_config": "Save Penalty Config",
+    "saving_button": "Saving..."
+}

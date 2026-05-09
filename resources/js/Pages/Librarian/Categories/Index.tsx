@@ -3,6 +3,7 @@ import { Link, router } from '@inertiajs/react';
 import LibrarianLayout from '@/Layouts/LibrarianLayout';
 import SearchBar from '@/Components/SearchBar';
 import { Pencil, Trash2, Tag } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type Category = {
     id: number;
@@ -21,8 +22,10 @@ type Props = {
 };
 
 export default function Index({ categories, filters }: Props) {
+    const { t } = useTranslation();
+
     const handleDelete = (category: Category) => {
-        if (!window.confirm(`Delete category "${category.name}"?`)) {
+        if (!window.confirm(t('confirm_delete_category', { name: category.name }))) {
             return;
         }
 
@@ -34,21 +37,21 @@ export default function Index({ categories, filters }: Props) {
             <div className="space-y-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Categories</h1>
-                        <p className="text-sm text-slate-500">Kelola kategori buku perpustakaan.</p>
+                        <h1 className="text-2xl font-bold text-slate-900">{t('categories_title')}</h1>
+                        <p className="text-sm text-slate-500">{t('categories_description')}</p>
                     </div>
 
                     <div className="flex items-center gap-3">
                         <SearchBar
                             routeName="librarian.categories.index"
                             searchValue={filters.search}
-                            placeholder="Search by category name..."
+                            placeholder={t('search_by_category_name')}
                         />
                         <Link
                             href={route('librarian.categories.create')}
                             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
                         >
-                            Add Category
+                            {t('add_category')}
                         </Link>
                     </div>
                 </div>
@@ -57,10 +60,10 @@ export default function Index({ categories, filters }: Props) {
                     <table className="w-full text-sm">
                         <thead className="bg-slate-50 text-slate-600">
                             <tr>
-                                <th className="p-4 text-left font-semibold">Name</th>
-                                <th className="p-4 text-left font-semibold">Slug</th>
-                                <th className="p-4 text-left font-semibold">Books</th>
-                                <th className="p-4 text-right font-semibold">Action</th>
+                                <th className="p-4 text-left font-semibold">{t('category_name_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('slug_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('books_count_col')}</th>
+                                <th className="p-4 text-right font-semibold">{t('action_col')}</th>
                             </tr>
                         </thead>
 
@@ -77,7 +80,7 @@ export default function Index({ categories, filters }: Props) {
                                         <td className="p-4 text-slate-600">{category.slug}</td>
                                         <td className="p-4">
                                             <span className="inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">
-                                                {category.books_count} books
+                                                {category.books_count} {t('books_suffix')}
                                             </span>
                                         </td>
                                         <td className="p-4">
@@ -102,7 +105,7 @@ export default function Index({ categories, filters }: Props) {
                             ) : (
                                 <tr>
                                     <td colSpan={4} className="p-8 text-center text-slate-500">
-                                        Belum ada data kategori.
+                                        {t('no_categories_data')}
                                     </td>
                                 </tr>
                             )}

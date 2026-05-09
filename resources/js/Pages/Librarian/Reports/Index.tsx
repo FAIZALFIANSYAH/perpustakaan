@@ -2,6 +2,7 @@ import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import LibrarianLayout from '@/Layouts/LibrarianLayout';
 import { BookOpen, Users, AlertTriangle, TrendingUp, Package, CheckCircle2, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type Category = {
     id: number;
@@ -75,43 +76,44 @@ function StatCard({
 }
 
 export default function Index({ reports }: Props) {
+    const { t } = useTranslation();
     return (
         <LibrarianLayout>
-            <Head title="Laporan Perpustakaan" />
+            <Head title={t('library_reports')} />
 
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Laporan Perpustakaan</h1>
-                    <p className="text-sm text-slate-500">Statistik buku, kategori, member, dan peminjaman.</p>
+                    <h1 className="text-2xl font-bold text-slate-900">{t('library_reports')}</h1>
+                    <p className="text-sm text-slate-500">{t('reports_description')}</p>
                 </div>
 
                 {/* Book Statistics */}
                 <div>
-                    <h2 className="text-lg font-semibold text-slate-900 mb-4">Statistik Buku</h2>
+                    <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('book_statistics')}</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                        <StatCard title="Total Buku" value={reports.books.total} icon={BookOpen} color="blue" />
-                        <StatCard title="Tersedia" value={reports.books.available} icon={CheckCircle2} color="green" />
-                        <StatCard title="Stok Menipis" value={reports.books.low_stock} icon={AlertTriangle} color="amber" />
-                        <StatCard title="Habis" value={reports.books.out_of_stock} icon={Package} color="red" />
+                        <StatCard title={t('total_books')} value={reports.books.total} icon={BookOpen} color="blue" />
+                        <StatCard title={t('available')} value={reports.books.available} icon={CheckCircle2} color="green" />
+                        <StatCard title={t('low_stock')} value={reports.books.low_stock} icon={AlertTriangle} color="amber" />
+                        <StatCard title={t('out_of_stock')} value={reports.books.out_of_stock} icon={Package} color="red" />
                     </div>
                 </div>
 
                 {/* Member & Borrowing Statistics */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
-                        <h2 className="text-lg font-semibold text-slate-900 mb-4">Statistik Member</h2>
+                        <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('member_statistics')}</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <StatCard title="Total Member" value={reports.members.total} icon={Users} color="purple" />
-                            <StatCard title="Aktif Bulan Ini" value={reports.members.active_this_month} icon={TrendingUp} color="green" />
+                            <StatCard title={t('total_members')} value={reports.members.total} icon={Users} color="purple" />
+                            <StatCard title={t('active_this_month')} value={reports.members.active_this_month} icon={TrendingUp} color="green" />
                         </div>
                     </div>
 
                     <div>
-                        <h2 className="text-lg font-semibold text-slate-900 mb-4">Statistik Peminjaman</h2>
+                        <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('borrowing_statistics')}</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <StatCard title="Bulan Ini" value={reports.borrowings.this_month} icon={BookOpen} color="blue" />
-                            <StatCard title="Dikembalikan" value={reports.borrowings.returns_this_month} icon={CheckCircle2} color="green" />
-                            <StatCard title="Terlambat" value={reports.borrowings.overdue} icon={AlertTriangle} color="red" />
+                            <StatCard title={t('this_month')} value={reports.borrowings.this_month} icon={BookOpen} color="blue" />
+                            <StatCard title={t('returned_count')} value={reports.borrowings.returns_this_month} icon={CheckCircle2} color="green" />
+                            <StatCard title={t('status_overdue')} value={reports.borrowings.overdue} icon={AlertTriangle} color="red" />
                         </div>
                     </div>
                 </div>
@@ -119,7 +121,7 @@ export default function Index({ reports }: Props) {
                 {/* Categories */}
                 <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200">
                     <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                        <h3 className="font-semibold text-slate-900">Buku per Kategori</h3>
+                        <h3 className="font-semibold text-slate-900">{t('books_per_category')}</h3>
                     </div>
                     <div className="divide-y divide-slate-100">
                         {reports.categories.length > 0 ? (
@@ -127,12 +129,12 @@ export default function Index({ reports }: Props) {
                                 <div key={category.id} className="flex items-center justify-between px-5 py-3">
                                     <p className="text-sm font-medium text-slate-900">{category.name}</p>
                                     <span className="inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">
-                                        {category.books_count} buku
+                                        {category.books_count} {t('book_suffix')}
                                     </span>
                                 </div>
                             ))
                         ) : (
-                            <div className="px-5 py-8 text-center text-sm text-slate-500">Belum ada kategori</div>
+                            <div className="px-5 py-8 text-center text-sm text-slate-500">{t('no_categories_data')}</div>
                         )}
                     </div>
                 </div>
@@ -140,24 +142,24 @@ export default function Index({ reports }: Props) {
                 {/* Most Borrowed Books */}
                 <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200">
                     <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                        <h3 className="font-semibold text-slate-900">Buku Terpopuler</h3>
+                        <h3 className="font-semibold text-slate-900">{t('most_borrowed_books')}</h3>
                         <Link
                             href={route('librarian.books.index')}
                             className="text-sm text-blue-600 hover:underline inline-flex items-center gap-1"
                         >
-                            Kelola Buku <ArrowRight size={14} />
+                            {t('manage_books_link')} <ArrowRight size={14} />
                         </Link>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead className="bg-slate-50 text-slate-600">
                                 <tr>
-                                    <th className="p-4 text-left font-semibold">#</th>
-                                    <th className="p-4 text-left font-semibold">Judul</th>
-                                    <th className="p-4 text-left font-semibold">Penulis</th>
-                                    <th className="p-4 text-left font-semibold">ISBN</th>
-                                    <th className="p-4 text-left font-semibold">Stok</th>
-                                    <th className="p-4 text-left font-semibold">Dipinjam</th>
+                                    <th className="p-4 text-left font-semibold">{t('number_sign')}</th>
+                                    <th className="p-4 text-left font-semibold">{t('title_col')}</th>
+                                    <th className="p-4 text-left font-semibold">{t('author_col')}</th>
+                                    <th className="p-4 text-left font-semibold">{t('isbn_label')}</th>
+                                    <th className="p-4 text-left font-semibold">{t('stock_col')}</th>
+                                    <th className="p-4 text-left font-semibold">{t('borrowed')}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-200">
@@ -181,13 +183,15 @@ export default function Index({ reports }: Props) {
                                                     {book.stock}
                                                 </span>
                                             </td>
-                                            <td className="p-4 text-slate-600">{book.times_borrowed} kali</td>
+                                            <td className="p-4 text-slate-600">
+                                                {book.times_borrowed} {t('borrowed_count_suffix')}
+                                            </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
                                         <td colSpan={6} className="p-8 text-center text-slate-500">
-                                            Belum ada data peminjaman
+                                            {t('no_borrowing_data')}
                                         </td>
                                     </tr>
                                 )}

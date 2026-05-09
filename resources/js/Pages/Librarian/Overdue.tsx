@@ -2,42 +2,43 @@ import React, { useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import LibrarianLayout from '@/Layouts/LibrarianLayout';
 import { AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // Status mapping for display
-const getStatusInfo = (status: string) => {
+const getStatusInfo = (status: string, t: (key: string) => string) => {
     const statusMap: Record<string, { label: string; color: string; bgColor: string }> = {
         borrowed: {
-            label: "Dipinjam",
+            label: t('status_borrowed'),
             color: "text-blue-700",
             bgColor: "bg-blue-100"
         },
         overdue: {
-            label: "Terlambat",
+            label: t('status_overdue'),
             color: "text-red-700",
             bgColor: "bg-red-100"
         },
         returned: {
-            label: "Dikembalikan",
+            label: t('status_returned'),
             color: "text-green-700",
             bgColor: "bg-green-100"
         },
         late_payment: {
-            label: "Pembayaran Terlambat",
+            label: t('status_late_payment'),
             color: "text-orange-700",
             bgColor: "bg-orange-100"
         },
         complete: {
-            label: "Selesai",
+            label: t('status_complete'),
             color: "text-emerald-700",
             bgColor: "bg-emerald-100"
         },
         lost: {
-            label: "Hilang",
+            label: t('status_lost'),
             color: "text-purple-700",
             bgColor: "bg-purple-100"
         },
         partial: {
-            label: "Dikembalikan Sebagian",
+            label: t('status_partial'),
             color: "text-yellow-700",
             bgColor: "bg-yellow-100"
         }
@@ -80,27 +81,29 @@ function getDaysLate(dueAt: string): number {
 }
 
 export default function Overdue({ overdues }: Props) {
+    const { t } = useTranslation();
+
     return (
         <LibrarianLayout>
-            <Head title="Overdue Borrowings" />
+            <Head title={t('overdue_borrowings_title')} />
 
             <div className="space-y-6">
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-900">Overdue Borrowings</h2>
-                    <p className="text-slate-500">Daftar peminjaman yang sudah melewati tanggal jatuh tempo.</p>
+                    <h2 className="text-2xl font-bold text-slate-900">{t('overdue_borrowings_title')}</h2>
+                    <p className="text-slate-500">{t('overdue_borrowings_description')}</p>
                 </div>
 
                 <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
                     <table className="w-full text-sm">
                         <thead className="bg-slate-50 text-slate-600">
                             <tr>
-                                <th className="p-4 text-left font-semibold">Borrow Code</th>
-                                <th className="p-4 text-left font-semibold">Member</th>
-                                <th className="p-4 text-left font-semibold">Books</th>
-                                <th className="p-4 text-left font-semibold">Due Date</th>
-                                <th className="p-4 text-left font-semibold">Days Late</th>
-                                <th className="p-4 text-left font-semibold">Status</th>
-                                <th className="p-4 text-right font-semibold">Action</th>
+                                <th className="p-4 text-left font-semibold">{t('borrow_code_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('member_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('books')}</th>
+                                <th className="p-4 text-left font-semibold">{t('due_date_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('days_late_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('status')}</th>
+                                <th className="p-4 text-right font-semibold">{t('action_col')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200">
@@ -127,13 +130,13 @@ export default function Overdue({ overdues }: Props) {
                                             <td className="p-4">
                                                 <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-700">
                                                     <AlertTriangle size={12} />
-                                                    {daysLate} day{daysLate !== 1 ? 's' : ''}
+                                                    {t('day_late_badge', { count: daysLate })}
                                                 </span>
                                             </td>
                                             <td className="p-4">
-                                                <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusInfo(borrowing.status).bgColor} ${getStatusInfo(borrowing.status).color}`}>
-                            {getStatusInfo(borrowing.status).label}
-                        </span>
+                                                <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusInfo(borrowing.status, t).bgColor} ${getStatusInfo(borrowing.status, t).color}`}>
+                                                    {getStatusInfo(borrowing.status, t).label}
+                                                </span>
                                             </td>
                                             <td className="p-4">
                                                 <div className="flex justify-end">
@@ -141,7 +144,7 @@ export default function Overdue({ overdues }: Props) {
                                                         href={route('librarian.borrowings.show', borrowing.id)}
                                                         className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                                                     >
-                                                        Detail
+                                                        {t('detail_button')}
                                                     </Link>
                                                 </div>
                                             </td>
@@ -151,7 +154,10 @@ export default function Overdue({ overdues }: Props) {
                             ) : (
                                 <tr>
                                     <td colSpan={7} className="p-8 text-center text-slate-500">
-                                        No overdue borrowings. All clear!
+                                        <div className="space-y-1">
+                                            <div className="font-medium">{t('overdue_none_title')}</div>
+                                            <div className="text-sm">{t('overdue_none_subtitle')}</div>
+                                        </div>
                                     </td>
                                 </tr>
                             )}

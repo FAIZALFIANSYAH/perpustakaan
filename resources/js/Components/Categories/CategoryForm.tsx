@@ -1,5 +1,6 @@
 import React, { FormEventHandler } from 'react';
 import { Link } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 
 type CategoryFormData = {
     name: string;
@@ -33,6 +34,8 @@ export default function CategoryForm({
     submit,
     backRoute,
 }: CategoryFormProps) {
+    const { t } = useTranslation();
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between gap-4">
@@ -45,17 +48,17 @@ export default function CategoryForm({
                     href={backRoute}
                     className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                 >
-                    Back
+                    {t('back_button')}
                 </Link>
             </div>
 
             <form onSubmit={submit} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
                 <div className="max-w-md">
-                    <label className="mb-2 block text-sm font-medium text-slate-700">Category Name</label>
+                    <label className="mb-2 block text-sm font-medium text-slate-700">{t('category_name_label')}</label>
                     <input
                         value={data.name}
                         onChange={(event) => setData('name', event.target.value)}
-                        placeholder="e.g. Teknologi, Novel, Sejarah"
+                        placeholder={t('category_name_placeholder')}
                         className="w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500"
                     />
                     <FieldError message={errors.name} />
@@ -66,7 +69,7 @@ export default function CategoryForm({
                         href={backRoute}
                         className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                     >
-                        Cancel
+                        {t('cancel_button')}
                     </Link>
 
                     <button
@@ -74,7 +77,7 @@ export default function CategoryForm({
                         disabled={processing}
                         className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        {processing ? 'Saving...' : submitLabel}
+                        {processing ? t('saving_button') : submitLabel}
                     </button>
                 </div>
             </form>

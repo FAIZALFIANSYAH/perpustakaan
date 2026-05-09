@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import { BookOpen, ClipboardList, Home, Search, AlertTriangle, FileBarChart2, Tag } from 'lucide-react';
 import UserDropdown from '@/Components/Layout/UserDropdown';
 
@@ -24,25 +25,26 @@ type Props = {
 };
 
 export default function LibrarianLayout({ children }: Props) {
+    const { t } = useTranslation();
     const { auth, flash } = usePage().props as PageProps;
     const user = auth?.user;
 
     const menus = [
-        { label: 'Dashboard', href: route('librarian.dashboard'), icon: Home },
-        { label: 'Categories', href: route('librarian.categories.index'), icon: Tag },
-        { label: 'Books', href: route('librarian.books.index'), icon: BookOpen },
-        { label: 'Borrowings', href: route('librarian.borrowings.index'), icon: ClipboardList },
-        { label: 'Reports', href: route('librarian.reports.index'), icon: FileBarChart2 },
-        { label: 'Overdue', href: route('librarian.overdue'), icon: AlertTriangle },
-        { label: 'Members', href: route('librarian.members.index'), icon: Search },
+        { label: t('dashboard_menu'), href: route('librarian.dashboard'), icon: Home },
+        { label: t('categories'), href: route('librarian.categories.index'), icon: Tag },
+        { label: t('books'), href: route('librarian.books.index'), icon: BookOpen },
+        { label: t('borrowings'), href: route('librarian.borrowings.index'), icon: ClipboardList },
+        { label: t('reports'), href: route('librarian.reports.index'), icon: FileBarChart2 },
+        { label: t('overdue'), href: route('librarian.overdue'), icon: AlertTriangle },
+        { label: t('members'), href: route('librarian.members.index'), icon: Search },
     ];
 
     return (
         <div className="min-h-screen bg-slate-100 flex">
             <aside className="w-64 bg-slate-900 text-white min-h-screen flex flex-col">
                 <div className="p-4 border-b border-slate-800">
-                    <div className="font-bold text-lg">Perpustakaan</div>
-                    <div className="text-xs text-slate-400">Librarian Panel</div>
+                    <div className="font-bold text-lg">{t('app_name')}</div>
+                    <div className="text-xs text-slate-400">{t('librarian_panel')}</div>
                 </div>
 
                 <nav className="flex-1 p-3 space-y-1">
@@ -65,7 +67,7 @@ export default function LibrarianLayout({ children }: Props) {
 
             <div className="flex-1 flex flex-col">
                 <header className="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
-                    <h1 className="text-xl font-semibold text-slate-900">Librarian Dashboard</h1>
+                    <h1 className="text-xl font-semibold text-slate-900">{t('librarian_dashboard')}</h1>
                     <UserDropdown profileRoute={route('profile.edit')} />
                 </header>
 

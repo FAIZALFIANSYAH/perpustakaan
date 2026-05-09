@@ -1,0 +1,11 @@
+{
+    "overdue_borrowings_title": "Overdue Borrowings",
+    "overdue_borrowings_description": "List of borrowings that have passed the due date.",
+    "borrow_code_col": "Borrow Code",
+    "due_date_col": "Due Date",
+    "days_late_col": "Days Late",
+    "day_late_badge_one": "{{count}} day",
+    "day_late_badge_other": "{{count}} days",
+    "overdue_none_title": "No overdue borrowings.",
+    "overdue_none_subtitle": "All clear!"
+}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import MemberLayout from '@/Layouts/MemberLayout';
 import { Bookmark } from 'lucide-react';
 
@@ -37,22 +38,23 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function Index({ reservations }: Props) {
+    const { t } = useTranslation();
     return (
         <MemberLayout>
-            <Head title="My Reservations" />
+            <Head title={t('my_reservations')} />
 
             <div className="space-y-6">
                 <div className="flex items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">My Reservations</h1>
-                        <p className="text-sm text-slate-500">Daftar reservasi buku yang telah Anda buat.</p>
+                        <h1 className="text-2xl font-bold text-slate-900">{t('my_reservations')}</h1>
+                        <p className="text-sm text-slate-500">{t('reservations_description')}</p>
                     </div>
 
                     <Link
                         href={route('member.catalog.index')}
                         className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
                     >
-                        Browse Catalog
+                        {t('browse_catalog')}
                     </Link>
                 </div>
 
@@ -60,10 +62,10 @@ export default function Index({ reservations }: Props) {
                     <table className="w-full text-sm">
                         <thead className="bg-slate-50 text-slate-600">
                             <tr>
-                                <th className="p-4 text-left font-semibold">Book</th>
-                                <th className="p-4 text-left font-semibold">Status</th>
-                                <th className="p-4 text-left font-semibold">Reserved At</th>
-                                <th className="p-4 text-left font-semibold">Fulfilled At</th>
+                                <th className="p-4 text-left font-semibold">{t('book')}</th>
+                                <th className="p-4 text-left font-semibold">{t('status')}</th>
+                                <th className="p-4 text-left font-semibold">{t('reserved_at')}</th>
+                                <th className="p-4 text-left font-semibold">{t('fulfilled_at')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200">
@@ -86,12 +88,12 @@ export default function Index({ reservations }: Props) {
                                     <td colSpan={4} className="p-8 text-center text-slate-500">
                                         <div className="flex flex-col items-center gap-2">
                                             <Bookmark size={24} className="text-slate-300" />
-                                            <p>Belum ada reservasi buku.</p>
+                                            <p>{t('no_reservations')}</p>
                                             <Link
                                                 href={route('member.catalog.index')}
                                                 className="text-sm text-blue-600 hover:underline"
                                             >
-                                                Jelajahi katalog untuk memulai
+                                                {t('explore_catalog_cta')}
                                             </Link>
                                         </div>
                                     </td>

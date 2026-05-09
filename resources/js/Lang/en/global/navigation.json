@@ -1,0 +1,17 @@
+{
+    "dashboard_menu": "Dashboard",
+    "categories": "Categories",
+    "books": "Books",
+    "borrowings": "Borrowings",
+    "fines": "Fines",
+    "fine_config": "Fine Config",
+    "penalty_config": "Penalty Config",
+    "users": "Users",
+    "reports": "Reports",
+    "app_name_short": "LIB",
+    "app_name": "Perpustakaan",
+    "user": "User",
+    "role_super_admin": "Super Admin",
+    "role_librarian": "Librarian",
+    "role_member": "Member"
+}

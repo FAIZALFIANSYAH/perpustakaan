@@ -2,6 +2,7 @@ import React, { FormEventHandler } from 'react';
 import { useForm } from '@inertiajs/react';
 import CategoryForm from '@/Components/Categories/CategoryForm';
 import LibrarianLayout from '@/Layouts/LibrarianLayout';
+import { useTranslation } from 'react-i18next';
 
 type Category = {
     id: number;
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export default function Edit({ category }: Props) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors } = useForm({
         name: category.name ?? '',
     });
@@ -25,9 +27,9 @@ export default function Edit({ category }: Props) {
     return (
         <LibrarianLayout>
             <CategoryForm
-                title="Edit Category"
-                description="Perbarui nama kategori."
-                submitLabel="Update Category"
+                title={t('edit_category')}
+                description={t('edit_category_description')}
+                submitLabel={t('update_category')}
                 data={data}
                 setData={setData}
                 errors={errors}

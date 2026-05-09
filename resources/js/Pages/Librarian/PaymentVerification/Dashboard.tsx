@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import LibrarianLayout from '@/Layouts/LibrarianLayout';
+import { useTranslation } from 'react-i18next';
 
 type PaymentVerification = {
     id: number;
@@ -40,12 +41,14 @@ type PageProps = {
 };
 
 export default function Dashboard({ statistics, pendingPayments }: PageProps) {
+    const { t } = useTranslation();
+
     const getPaymentMethodLabel = (method: string) => {
         const labels = {
-            cash: 'Cash',
-            bank_transfer: 'Bank Transfer',
-            e_wallet: 'E-Wallet',
-            check: 'Check',
+            cash: t('pv_method_cash'),
+            bank_transfer: t('pv_method_bank_transfer'),
+            e_wallet: t('pv_method_e_wallet'),
+            check: t('pv_method_check'),
         };
         return labels[method as keyof typeof labels] || method;
     };
@@ -61,8 +64,8 @@ export default function Dashboard({ statistics, pendingPayments }: PageProps) {
         <LibrarianLayout>
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Payment Verification Dashboard</h1>
-                    <p className="text-sm text-slate-500">Review and verify payment requests from members.</p>
+                    <h1 className="text-2xl font-bold text-slate-900">{t('payment_verification_dashboard_title')}</h1>
+                    <p className="text-sm text-slate-500">{t('payment_verification_dashboard_description')}</p>
                 </div>
 
                 {/* Statistics Cards */}
@@ -77,7 +80,7 @@ export default function Dashboard({ statistics, pendingPayments }: PageProps) {
                                 </div>
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm font-medium text-slate-600">Pending</p>
+                                <p className="text-sm font-medium text-slate-600">{t('pv_stat_pending')}</p>
                                 <p className="text-2xl font-bold text-slate-900">{statistics.pending_count}</p>
                             </div>
                         </div>
@@ -93,7 +96,7 @@ export default function Dashboard({ statistics, pendingPayments }: PageProps) {
                                 </div>
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm font-medium text-slate-600">Expired</p>
+                                <p className="text-sm font-medium text-slate-600">{t('pv_stat_expired')}</p>
                                 <p className="text-2xl font-bold text-slate-900">{statistics.expired_count}</p>
                             </div>
                         </div>
@@ -109,7 +112,7 @@ export default function Dashboard({ statistics, pendingPayments }: PageProps) {
                                 </div>
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm font-medium text-slate-600">Verified Today</p>
+                                <p className="text-sm font-medium text-slate-600">{t('pv_stat_verified_today')}</p>
                                 <p className="text-2xl font-bold text-slate-900">{statistics.verified_today}</p>
                             </div>
                         </div>
@@ -125,7 +128,7 @@ export default function Dashboard({ statistics, pendingPayments }: PageProps) {
                                 </div>
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm font-medium text-slate-600">Total Pending</p>
+                                <p className="text-sm font-medium text-slate-600">{t('pv_stat_total_pending')}</p>
                                 <p className="text-2xl font-bold text-slate-900">
                                     Rp {statistics.total_amount_pending.toLocaleString('id-ID')}
                                 </p>
@@ -140,7 +143,7 @@ export default function Dashboard({ statistics, pendingPayments }: PageProps) {
                         href={route('librarian.payment-verification.index')}
                         className="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
                     >
-                        View All Payments
+                        {t('pv_action_view_all')}
                     </Link>
                     <Link
                         href={route('librarian.payment-verification.process-expired')}
@@ -148,16 +151,16 @@ export default function Dashboard({ statistics, pendingPayments }: PageProps) {
                         as="button"
                         className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                     >
-                        Process Expired
+                        {t('pv_action_process_expired')}
                     </Link>
                 </div>
 
                 {/* Pending Payments */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-semibold text-slate-900">Pending Payment Requests</h2>
+                        <h2 className="text-lg font-semibold text-slate-900">{t('pv_pending_requests_title')}</h2>
                         <span className="text-sm text-slate-500">
-                            {pendingPayments.length} request{pendingPayments.length !== 1 ? 's' : ''}
+                            {t('pv_request_count', { count: pendingPayments.length })}
                         </span>
                     </div>
 
@@ -168,8 +171,8 @@ export default function Dashboard({ statistics, pendingPayments }: PageProps) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h3 className="mt-4 text-lg font-medium text-slate-900">All caught up!</h3>
-                            <p className="mt-2 text-sm text-slate-500">No pending payment requests to review.</p>
+                            <h3 className="mt-4 text-lg font-medium text-slate-900">{t('pv_empty_title')}</h3>
+                            <p className="mt-2 text-sm text-slate-500">{t('pv_empty_description')}</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -183,10 +186,10 @@ export default function Dashboard({ statistics, pendingPayments }: PageProps) {
                                                         ? 'bg-red-100 text-red-700' 
                                                         : 'bg-amber-100 text-amber-700'
                                                 }`}>
-                                                    {isExpiringSoon(payment.expires_at) ? 'Expiring Soon' : 'Pending'}
+                                                    {isExpiringSoon(payment.expires_at) ? t('pv_status_expiring_soon') : t('pv_status_pending')}
                                                 </span>
                                                 <span className="text-sm text-slate-500">
-                                                    Expires: {new Date(payment.expires_at).toLocaleDateString('id-ID')} {new Date(payment.expires_at).toLocaleTimeString('id-ID')}
+                                                    {t('pv_expires_prefix')} {new Date(payment.expires_at).toLocaleDateString('id-ID')} {new Date(payment.expires_at).toLocaleTimeString('id-ID')}
                                                 </span>
                                             </div>
 
@@ -196,37 +199,38 @@ export default function Dashboard({ statistics, pendingPayments }: PageProps) {
                                                         {payment.fine.borrowing_item.book.title}
                                                     </h3>
                                                     <p className="text-sm text-slate-600">
-                                                        by {payment.fine.borrowing_item.book.author} • {payment.fine.type}
+                                                        {t('pv_by_prefix')} {payment.fine.borrowing_item.book.author} • {payment.fine.type}
                                                     </p>
                                                 </div>
 
                                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                                     <div>
-                                                        <span className="font-medium text-slate-700">Member:</span>
+                                                        <span className="font-medium text-slate-700">{t('pv_member_label')}</span>
                                                         <span className="ml-2 text-slate-900">{payment.member.name}</span>
                                                     </div>
                                                     <div>
-                                                        <span className="font-medium text-slate-700">Amount:</span>
+                                                        <span className="font-medium text-slate-700">{t('pv_amount_label')}</span>
                                                         <span className="ml-2 text-slate-900">
                                                             Rp {payment.requested_amount.toLocaleString('id-ID')}
                                                         </span>
                                                     </div>
                                                     <div>
-                                                        <span className="font-medium text-slate-700">Method:</span>
+                                                        <span className="font-medium text-slate-700">{t('pv_method_label')}</span>
                                                         <span className="ml-2 text-slate-900">
                                                             {getPaymentMethodLabel(payment.payment_method)}
                                                         </span>
                                                     </div>
                                                     {payment.reference_number && (
                                                         <div>
-                                                            <span className="font-medium text-slate-700">Reference:</span>
+                                                            <span className="font-medium text-slate-700">{t('pv_reference_label')}</span>
                                                             <span className="ml-2 text-slate-900">{payment.reference_number}</span>
                                                         </div>
                                                     )}
                                                 </div>
 
                                                 <div className="text-sm text-slate-500">
-                                                    Requested: {new Date(payment.requested_at).toLocaleDateString('id-ID')} {new Date(payment.requested_at).toLocaleTimeString('id-ID')}
+                                                    {t('pv_requested_prefix')} {new Date(payment.requested_at).toLocaleDateString('id-ID')}{' '}
+                                                    {new Date(payment.requested_at).toLocaleTimeString('id-ID')}
                                                 </div>
                                             </div>
                                         </div>
@@ -236,7 +240,7 @@ export default function Dashboard({ statistics, pendingPayments }: PageProps) {
                                                 href={route('librarian.payment-verification.show', payment.id)}
                                                 className="inline-flex items-center rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-slate-700"
                                             >
-                                                Review
+                                                {t('pv_review_button')}
                                             </Link>
                                         </div>
                                     </div>

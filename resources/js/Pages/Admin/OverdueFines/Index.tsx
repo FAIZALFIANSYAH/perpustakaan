@@ -1,5 +1,6 @@
 import React, { FormEventHandler } from 'react';
 import { useForm } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import AdminLayout from '@/Layouts/AdminLayout';
 
 type Statistics = {
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export default function OverdueFinesIndex({ statistics }: Props) {
+    const { t } = useTranslation();
     const { post, processing } = useForm();
 
     const submit: FormEventHandler = (e) => {
@@ -24,9 +26,9 @@ export default function OverdueFinesIndex({ statistics }: Props) {
         <AdminLayout>
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Overdue Fines Processing</h1>
+                    <h1 className="text-2xl font-bold text-slate-900">{t('overdue_fines_processing')}</h1>
                     <p className="text-sm text-slate-500">
-                        Automatically create fines for overdue borrowings that don't have fines yet.
+                        {t('overdue_fines_description')}
                     </p>
                 </div>
 
@@ -42,7 +44,7 @@ export default function OverdueFinesIndex({ statistics }: Props) {
                                 </div>
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm font-medium text-slate-600">Total Overdue</p>
+                                <p className="text-sm font-medium text-slate-600">{t('total_overdue')}</p>
                                 <p className="text-2xl font-bold text-slate-900">{statistics.total_overdue}</p>
                             </div>
                         </div>
@@ -58,7 +60,7 @@ export default function OverdueFinesIndex({ statistics }: Props) {
                                 </div>
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm font-medium text-slate-600">Need Processing</p>
+                                <p className="text-sm font-medium text-slate-600">{t('need_processing')}</p>
                                 <p className="text-2xl font-bold text-slate-900">{statistics.need_processing}</p>
                             </div>
                         </div>
@@ -74,7 +76,7 @@ export default function OverdueFinesIndex({ statistics }: Props) {
                                 </div>
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm font-medium text-slate-600">Already Processed</p>
+                                <p className="text-sm font-medium text-slate-600">{t('already_processed')}</p>
                                 <p className="text-2xl font-bold text-slate-900">{statistics.already_processed}</p>
                             </div>
                         </div>
@@ -83,16 +85,16 @@ export default function OverdueFinesIndex({ statistics }: Props) {
 
                 {/* Processing Form */}
                 <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                    <h2 className="text-lg font-semibold text-slate-900 mb-4">Process Overdue Fines</h2>
-                    
+                    <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('process_overdue_fines')}</h2>
+
                     {statistics.need_processing > 0 ? (
                         <div>
                             <div className="mb-4 p-4 rounded-lg bg-amber-50 border border-amber-200">
                                 <h3 className="text-sm font-semibold text-amber-900 mb-2">
-                                    {statistics.need_processing} overdue borrowings need fine processing
+                                    {t('overdue_need_processing_title', { count: statistics.need_processing })}
                                 </h3>
                                 <p className="text-sm text-amber-700">
-                                    This will create late return fines for all overdue borrowings that don't have fines yet.
+                                    {t('overdue_need_processing_desc')}
                                 </p>
                             </div>
 
@@ -103,7 +105,7 @@ export default function OverdueFinesIndex({ statistics }: Props) {
                                         disabled={processing}
                                         className="rounded-lg bg-slate-900 px-6 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
                                     >
-                                        {processing ? 'Processing...' : 'Process All Overdue Fines'}
+                                        {processing ? t('processing_button') : t('process_all_overdue')}
                                     </button>
                                 </div>
                             </form>
@@ -115,9 +117,9 @@ export default function OverdueFinesIndex({ statistics }: Props) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h3 className="mt-4 text-lg font-medium text-slate-900">All caught up!</h3>
+                            <h3 className="mt-4 text-lg font-medium text-slate-900">{t('all_caught_up')}</h3>
                             <p className="mt-2 text-sm text-slate-500">
-                                No overdue borrowings need fine processing at this time.
+                                {t('no_overdue_processing_needed')}
                             </p>
                         </div>
                     )}
@@ -125,23 +127,23 @@ export default function OverdueFinesIndex({ statistics }: Props) {
 
                 {/* Information */}
                 <div className="rounded-2xl bg-blue-50 p-6 ring-1 ring-blue-200">
-                    <h3 className="text-sm font-semibold text-blue-900 mb-2">How Overdue Fine Processing Works</h3>
+                    <h3 className="text-sm font-semibold text-blue-900 mb-2">{t('how_overdue_processing_works')}</h3>
                     <ul className="space-y-2 text-sm text-blue-800">
                         <li className="flex items-start">
                             <span className="mr-2">•</span>
-                            <span><strong>Automatic Detection:</strong> System identifies overdue borrowings without fines.</span>
+                            <span><strong>{t('automatic_detection')}:</strong> {t('automatic_detection_desc')}</span>
                         </li>
                         <li className="flex items-start">
                             <span className="mr-2">•</span>
-                            <span><strong>Fine Calculation:</strong> Calculates late return fines based on days overdue and grace period.</span>
+                            <span><strong>{t('fine_calculation')}:</strong> {t('fine_calculation_desc')}</span>
                         </li>
                         <li className="flex items-start">
                             <span className="mr-2">•</span>
-                            <span><strong>Member Notification:</strong> Fines will appear in member dashboards and block further borrowing.</span>
+                            <span><strong>{t('member_notification')}:</strong> {t('member_notification_desc')}</span>
                         </li>
                         <li className="flex items-start">
                             <span className="mr-2">•</span>
-                            <span><strong>Status Updates:</strong> Borrowing status may change to "awaiting_fine_payment" if applicable.</span>
+                            <span><strong>{t('status_updates')}:</strong> {t('status_updates_desc')}</span>
                         </li>
                     </ul>
                 </div>

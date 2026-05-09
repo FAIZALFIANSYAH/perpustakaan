@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import LibrarianLayout from '@/Layouts/LibrarianLayout';
 import SearchBar from '@/Components/SearchBar';
+import { useTranslation } from 'react-i18next';
 
 type BorrowingItem = {
     id: number;
@@ -40,26 +41,34 @@ type Props = {
 };
 
 export default function Index({ borrowings, filters }: Props) {
+    const { t } = useTranslation();
+
+    const statusLabel = (status: string) => {
+        const key = `status_${status}`;
+        const label = t(key);
+        return label === key ? status : label;
+    };
+
     return (
         <LibrarianLayout>
             <div className="space-y-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Borrowing Management</h1>
-                        <p className="text-sm text-slate-500">Kelola transaksi peminjaman buku perpustakaan.</p>
+                        <h1 className="text-2xl font-bold text-slate-900">{t('borrowing_management')}</h1>
+                        <p className="text-sm text-slate-500">{t('borrowing_management_description')}</p>
                     </div>
 
                     <div className="flex items-center gap-3">
                         <SearchBar
                             routeName="librarian.borrowings.index"
                             searchValue={filters.search}
-                            placeholder="Search by code, member, book..."
+                            placeholder={t('search_by_code_member_book')}
                         />
                         <Link
                             href={route('librarian.borrowings.create')}
                             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
                         >
-                            Add Borrowing
+                            {t('add_borrowing')}
                         </Link>
                     </div>
                 </div>
@@ -68,14 +77,14 @@ export default function Index({ borrowings, filters }: Props) {
                     <table className="w-full text-sm">
                         <thead className="bg-slate-50 text-slate-600">
                             <tr>
-                                <th className="p-4 text-left font-semibold">Code</th>
-                                <th className="p-4 text-left font-semibold">Member</th>
-                                <th className="p-4 text-left font-semibold">Books</th>
-                                <th className="p-4 text-left font-semibold">Borrowed</th>
-                                <th className="p-4 text-left font-semibold">Due</th>
-                                <th className="p-4 text-left font-semibold">Status</th>
-                                <th className="p-4 text-left font-semibold">Processed By</th>
-                                <th className="p-4 text-right font-semibold">Action</th>
+                                <th className="p-4 text-left font-semibold">{t('code_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('member_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('books')}</th>
+                                <th className="p-4 text-left font-semibold">{t('borrowed_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('due_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('status')}</th>
+                                <th className="p-4 text-left font-semibold">{t('processed_by_col')}</th>
+                                <th className="p-4 text-right font-semibold">{t('action_col')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200">
@@ -103,7 +112,7 @@ export default function Index({ borrowings, filters }: Props) {
                                                 borrowing.status === 'awaiting_fine_payment' ? 'bg-amber-100 text-amber-700' :
                                                 'bg-gray-100 text-gray-700'
                                             }`}>
-                                                {borrowing.status}
+                                                {statusLabel(borrowing.status)}
                                             </span>
                                         </td>
                                         <td className="p-4 text-slate-600">{borrowing.processedBy?.name ?? borrowing.processed_by?.name ?? '-'}</td>
@@ -113,7 +122,7 @@ export default function Index({ borrowings, filters }: Props) {
                                                     href={route('librarian.borrowings.show', borrowing.id)}
                                                     className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                                                 >
-                                                    Detail
+                                                    {t('detail_button')}
                                                 </Link>
                                             </div>
                                         </td>
@@ -122,7 +131,7 @@ export default function Index({ borrowings, filters }: Props) {
                             ) : (
                                 <tr>
                                     <td colSpan={8} className="p-8 text-center text-slate-500">
-                                        Belum ada data peminjaman
+                                        {t('no_borrowings_data')}
                                     </td>
                                 </tr>
                             )}

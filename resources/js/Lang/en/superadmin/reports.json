@@ -1,0 +1,22 @@
+{
+    "reports": "Reports",
+    "reports_description": "Library statistics summary for Super Admin.",
+    "date_from": "Date From",
+    "date_to": "Date To",
+    "apply_filter": "Apply Filter",
+    "reset": "Reset",
+    "total_books": "Total Books",
+    "total_members": "Total Members",
+    "total_borrowings": "Total Borrowings",
+    "active_borrowings": "Active Borrowings",
+    "returned": "Returned",
+    "late_borrowings": "Late Borrowings",
+    "recent_borrowings": "Recent Borrowings",
+    "code": "Code",
+    "member": "Member",
+    "borrowed": "Borrowed",
+    "due": "Due",
+    "status": "Status",
+    "processed_by": "Processed By",
+    "no_borrowing_data": "No borrowing data found."
+}

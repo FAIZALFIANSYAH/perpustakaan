@@ -1,0 +1,11 @@
+{
+    "admin_dashboard": "Dashboard Admin",
+    "welcome": "Selamat Datang",
+    "super_admin": "Super Admin",
+    "admin_subtitle": "Sistem Informasi Perpustakaan - Panel Administrator",
+    "total_borrowings": "Total Peminjaman",
+    "returned_total": "Total Dikembalikan",
+    "recent_borrowings": "Peminjaman Terbaru",
+    "recent_borrowings_description": "Daftar transaksi peminjaman terbaru.",
+    "no_borrowings_data": "Belum ada data peminjaman."
+}

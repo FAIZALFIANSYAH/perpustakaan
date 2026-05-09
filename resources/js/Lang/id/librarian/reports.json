@@ -1,0 +1,23 @@
+{
+    "library_reports": "Laporan Perpustakaan",
+    "reports_description": "Statistik buku, kategori, anggota, dan peminjaman.",
+    "book_statistics": "Statistik Buku",
+    "total_books": "Total Buku",
+    "available": "Tersedia",
+    "low_stock": "Stok Menipis",
+    "out_of_stock": "Habis",
+    "member_statistics": "Statistik Anggota",
+    "total_members": "Total Anggota",
+    "active_this_month": "Aktif Bulan Ini",
+    "borrowing_statistics": "Statistik Peminjaman",
+    "this_month": "Bulan Ini",
+    "returned_count": "Dikembalikan",
+    "books_per_category": "Buku per Kategori",
+    "book_suffix": "buku",
+    "no_categories_data": "Belum ada kategori.",
+    "most_borrowed_books": "Buku Terpopuler",
+    "manage_books_link": "Kelola Buku",
+    "number_sign": "#",
+    "borrowed_count_suffix": "kali",
+    "no_borrowing_data": "Belum ada data peminjaman."
+}

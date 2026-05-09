@@ -1,5 +1,6 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import LibrarianLayout from '@/Layouts/LibrarianLayout';
 import { ArrowRight, BookOpen, ClipboardList, AlertTriangle, RotateCcw, Plus } from 'lucide-react';
 
@@ -72,22 +73,24 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function Dashboard({ stats, recentTransactions, dueToday }: Props) {
+    const { t } = useTranslation();
+
     return (
         <LibrarianLayout>
-            <Head title="Librarian Dashboard" />
+            <Head title={t('librarian_dashboard')} />
 
             <div className="space-y-6">
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-900">Librarian Dashboard</h2>
-                    <p className="text-slate-500">Operasional perpustakaan hari ini.</p>
+                    <h2 className="text-2xl font-bold text-slate-900">{t('librarian_dashboard')}</h2>
+                    <p className="text-slate-500">{t('dashboard_subtitle')}</p>
                 </div>
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                    <StatCard title="Borrowings Today" value={stats.borrowings_today} icon={ClipboardList} color="blue" />
-                    <StatCard title="Returns Today" value={stats.returns_today} icon={RotateCcw} color="green" />
-                    <StatCard title="Active Borrowings" value={stats.active_borrowings} icon={BookOpen} color="amber" />
-                    <StatCard title="Overdue Count" value={stats.overdue_count} icon={AlertTriangle} color="red" />
+                    <StatCard title={t('borrowings_today')} value={stats.borrowings_today} icon={ClipboardList} color="blue" />
+                    <StatCard title={t('returns_today')} value={stats.returns_today} icon={RotateCcw} color="green" />
+                    <StatCard title={t('active_borrowings')} value={stats.active_borrowings} icon={BookOpen} color="amber" />
+                    <StatCard title={t('overdue_count')} value={stats.overdue_count} icon={AlertTriangle} color="red" />
                 </div>
 
                 {/* Quick Actions */}
@@ -97,21 +100,21 @@ export default function Dashboard({ stats, recentTransactions, dueToday }: Props
                         className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
                     >
                         <Plus size={16} />
-                        New Borrowing
+                        {t('new_borrowing')}
                     </Link>
                     <Link
                         href={route('librarian.borrowings.index')}
                         className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                     >
                         <RotateCcw size={16} />
-                        Return Book
+                        {t('return_book')}
                     </Link>
                     <Link
                         href={route('librarian.books.index')}
                         className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                     >
                         <BookOpen size={16} />
-                        Manage Books
+                        {t('manage_books')}
                     </Link>
                 </div>
 
@@ -119,9 +122,9 @@ export default function Dashboard({ stats, recentTransactions, dueToday }: Props
                     {/* Recent Transactions */}
                     <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200">
                         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                            <h3 className="font-semibold text-slate-900">Recent Transactions</h3>
+                            <h3 className="font-semibold text-slate-900">{t('recent_transactions')}</h3>
                             <Link href={route('librarian.borrowings.index')} className="text-sm text-blue-600 hover:underline inline-flex items-center gap-1">
-                                View All <ArrowRight size={14} />
+                                {t('view_all')} <ArrowRight size={14} />
                             </Link>
                         </div>
                         <div className="divide-y divide-slate-100">
@@ -136,7 +139,7 @@ export default function Dashboard({ stats, recentTransactions, dueToday }: Props
                                     </div>
                                 ))
                             ) : (
-                                <div className="px-5 py-8 text-center text-sm text-slate-500">No recent transactions</div>
+                                <div className="px-5 py-8 text-center text-sm text-slate-500">{t('no_recent_transactions')}</div>
                             )}
                         </div>
                     </div>
@@ -144,9 +147,9 @@ export default function Dashboard({ stats, recentTransactions, dueToday }: Props
                     {/* Due Today / Late */}
                     <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200">
                         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                            <h3 className="font-semibold text-slate-900">Due Today</h3>
+                            <h3 className="font-semibold text-slate-900">{t('due_today')}</h3>
                             <Link href={route('librarian.overdue')} className="text-sm text-blue-600 hover:underline inline-flex items-center gap-1">
-                                Overdue List <ArrowRight size={14} />
+                                {t('overdue_list')} <ArrowRight size={14} />
                             </Link>
                         </div>
                         <div className="divide-y divide-slate-100">
@@ -155,13 +158,13 @@ export default function Dashboard({ stats, recentTransactions, dueToday }: Props
                                     <div key={tx.id} className="flex items-center justify-between px-5 py-3">
                                         <div>
                                             <p className="text-sm font-medium text-slate-900">{tx.code}</p>
-                                            <p className="text-xs text-slate-500">{tx.member?.name ?? '-'} &middot; Due: {tx.due_at}</p>
+                                            <p className="text-xs text-slate-500">{tx.member?.name ?? '-'} &middot; {t('due_label')}: {tx.due_at}</p>
                                         </div>
-                                        <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-700">Due Today</span>
+                                        <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-700">{t('due_today')}</span>
                                     </div>
                                 ))
                             ) : (
-                                <div className="px-5 py-8 text-center text-sm text-slate-500">No borrowings due today</div>
+                                <div className="px-5 py-8 text-center text-sm text-slate-500">{t('no_borrowings_due_today')}</div>
                             )}
                         </div>
                     </div>

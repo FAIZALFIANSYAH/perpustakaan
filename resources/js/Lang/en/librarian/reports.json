@@ -1,0 +1,23 @@
+{
+    "library_reports": "Library Reports",
+    "reports_description": "Book, category, member, and borrowing statistics.",
+    "book_statistics": "Book Statistics",
+    "total_books": "Total Books",
+    "available": "Available",
+    "low_stock": "Low Stock",
+    "out_of_stock": "Out of Stock",
+    "member_statistics": "Member Statistics",
+    "total_members": "Total Members",
+    "active_this_month": "Active This Month",
+    "borrowing_statistics": "Borrowing Statistics",
+    "this_month": "This Month",
+    "returned_count": "Returned",
+    "books_per_category": "Books per Category",
+    "book_suffix": "books",
+    "no_categories_data": "No categories yet.",
+    "most_borrowed_books": "Most Borrowed Books",
+    "manage_books_link": "Manage Books",
+    "number_sign": "#",
+    "borrowed_count_suffix": "times",
+    "no_borrowing_data": "No borrowing data yet."
+}

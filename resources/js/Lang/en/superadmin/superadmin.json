@@ -1,0 +1,11 @@
+{
+    "admin_dashboard": "Admin Dashboard",
+    "welcome": "Welcome",
+    "super_admin": "Super Admin",
+    "admin_subtitle": "Library Information System - Administrator Panel",
+    "total_borrowings": "Total Borrowings",
+    "returned_total": "Returned Total",
+    "recent_borrowings": "Recent Borrowings",
+    "recent_borrowings_description": "Latest borrowing transactions list.",
+    "no_borrowings_data": "No borrowing data yet."
+}

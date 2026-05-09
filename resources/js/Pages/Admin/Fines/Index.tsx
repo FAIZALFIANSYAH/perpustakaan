@@ -1,5 +1,6 @@
 import React, { useState, FormEventHandler } from 'react';
 import { Link, useForm } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import AdminLayout from '@/Layouts/AdminLayout';
 
 type FinePayment = {
@@ -63,7 +64,7 @@ function StatCard({ label, value, color }: { label: string; value: string | numb
     );
 }
 
-function PaymentModal({ fine, onClose }: { fine: Fine; onClose: () => void }) {
+function PaymentModal({ fine, onClose, t }: { fine: Fine; onClose: () => void; t: (key: string, options?: any) => string }) {
     const remaining = parseFloat(fine.amount) - parseFloat(fine.paid_amount);
     const { data, setData, post, processing, errors, reset } = useForm({
         amount: remaining.toString(),
@@ -87,30 +88,30 @@ function PaymentModal({ fine, onClose }: { fine: Fine; onClose: () => void }) {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Process Fine Payment</h3>
-                
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('process_fine_payment')}</h3>
+
                 <div className="space-y-2 mb-4 text-sm">
                     <div className="flex justify-between">
-                        <span className="text-slate-600">Member:</span>
+                        <span className="text-slate-600">{t('member_label')}:</span>
                         <span className="font-medium">{fine.member.name}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="text-slate-600">Book:</span>
+                        <span className="text-slate-600">{t('book_label')}:</span>
                         <span className="font-medium">{fine.borrowing_item.book.title}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="text-slate-600">Total Fine:</span>
+                        <span className="text-slate-600">{t('total_fine_label')}:</span>
                         <span className="font-medium">Rp {new Intl.NumberFormat('id-ID').format(parseFloat(fine.amount))}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="text-slate-600">Remaining:</span>
+                        <span className="text-slate-600">{t('remaining_label')}:</span>
                         <span className="font-semibold text-red-600">Rp {new Intl.NumberFormat('id-ID').format(remaining)}</span>
                     </div>
                 </div>
 
                 <form onSubmit={submit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Payment Amount (Rp)</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">{t('payment_amount_label')}</label>
                         <input
                             type="number"
                             min="0"
@@ -124,19 +125,19 @@ function PaymentModal({ fine, onClose }: { fine: Fine; onClose: () => void }) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Payment Method</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">{t('payment_method_label')}</label>
                         <select
                             value={data.payment_method}
                             onChange={(e) => setData('payment_method', e.target.value)}
                             className="w-full rounded-lg border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                         >
-                            <option value="cash">Cash</option>
-                            <option value="transfer">Transfer</option>
+                            <option value="cash">{t('cash_option')}</option>
+                            <option value="transfer">{t('transfer_option')}</option>
                         </select>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Notes (Optional)</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">{t('notes_optional_label')}</label>
                         <textarea
                             value={data.notes}
                             onChange={(e) => setData('notes', e.target.value)}
@@ -151,14 +152,14 @@ function PaymentModal({ fine, onClose }: { fine: Fine; onClose: () => void }) {
                             onClick={onClose}
                             className="flex-1 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                         >
-                            Cancel
+                            {t('cancel_button')}
                         </button>
                         <button
                             type="submit"
                             disabled={processing}
                             className="flex-1 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 disabled:opacity-60"
                         >
-                            {processing ? 'Processing...' : 'Process Payment'}
+                            {processing ? t('processing_button') : t('submit_payment_button')}
                         </button>
                     </div>
                 </form>
@@ -168,6 +169,7 @@ function PaymentModal({ fine, onClose }: { fine: Fine; onClose: () => void }) {
 }
 
 export default function FinesIndex({ fines, statistics, filters }: Props) {
+    const { t } = useTranslation();
     const [selectedFine, setSelectedFine] = useState<Fine | null>(null);
 
     const formatCurrency = (amount: string | number) => {
@@ -187,12 +189,21 @@ export default function FinesIndex({ fines, statistics, filters }: Props) {
     };
 
     const getTypeLabel = (type: string) => {
-        const labels = {
-            late_return: 'Late Return',
-            lost_book: 'Lost Book',
-            damage: 'Damage',
+        const labels: Record<string, string> = {
+            late_return: t('late_return'),
+            lost_book: t('lost_book'),
+            damage: t('damage'),
         };
         return labels[type] || type;
+    };
+
+    const getStatusLabel = (status: string) => {
+        const labels: Record<string, string> = {
+            unpaid: t('status_unpaid'),
+            partial: t('status_partial'),
+            paid: t('status_paid'),
+        };
+        return labels[status] || status;
     };
 
     return (
@@ -200,30 +211,30 @@ export default function FinesIndex({ fines, statistics, filters }: Props) {
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Fines Management</h1>
-                        <p className="text-sm text-slate-500">View and manage all fines and payments.</p>
+                        <h1 className="text-2xl font-bold text-slate-900">{t('fines_management')}</h1>
+                        <p className="text-sm text-slate-500">{t('fines_description')}</p>
                     </div>
                 </div>
 
                 {/* Statistics */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <StatCard
-                        label="Total Fines"
+                        label={t('total_fines')}
                         value={statistics.total_fines}
                         color="bg-blue-500 text-white"
                     />
                     <StatCard
-                        label="Unpaid Fines"
+                        label={t('unpaid_fines')}
                         value={statistics.total_unpaid}
                         color="bg-red-500 text-white"
                     />
                     <StatCard
-                        label="Paid Fines"
+                        label={t('paid_fines')}
                         value={statistics.total_paid}
                         color="bg-green-500 text-white"
                     />
                     <StatCard
-                        label="Total Unpaid Amount"
+                        label={t('total_unpaid_amount')}
                         value={`Rp ${formatCurrency(statistics.total_unpaid_amount)}`}
                         color="bg-orange-500 text-white"
                     />
@@ -240,7 +251,7 @@ export default function FinesIndex({ fines, statistics, filters }: Props) {
                             type="text"
                             name="search"
                             defaultValue={filters.search}
-                            placeholder="Search by member name or email..."
+                            placeholder={t('search_by_member')}
                             className="flex-1 min-w-[200px] rounded-lg border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                         />
                         <select
@@ -248,16 +259,16 @@ export default function FinesIndex({ fines, statistics, filters }: Props) {
                             defaultValue={filters.status}
                             className="rounded-lg border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                         >
-                            <option value="">All Status</option>
-                            <option value="unpaid">Unpaid</option>
-                            <option value="partial">Partial</option>
-                            <option value="paid">Paid</option>
+                            <option value="">{t('all_status')}</option>
+                            <option value="unpaid">{t('status_unpaid')}</option>
+                            <option value="partial">{t('status_partial')}</option>
+                            <option value="paid">{t('status_paid')}</option>
                         </select>
                         <button
                             type="submit"
                             className="rounded-lg bg-slate-900 px-6 py-2 text-sm font-semibold text-white hover:bg-slate-700"
                         >
-                            Filter
+                            {t('filter_button')}
                         </button>
                     </form>
                 </div>
@@ -267,14 +278,14 @@ export default function FinesIndex({ fines, statistics, filters }: Props) {
                     <table className="w-full text-sm">
                         <thead className="bg-slate-50 text-slate-600">
                             <tr>
-                                <th className="p-4 text-left font-semibold">Member</th>
-                                <th className="p-4 text-left font-semibold">Book</th>
-                                <th className="p-4 text-left font-semibold">Type</th>
-                                <th className="p-4 text-left font-semibold">Amount</th>
-                                <th className="p-4 text-left font-semibold">Paid</th>
-                                <th className="p-4 text-left font-semibold">Remaining</th>
-                                <th className="p-4 text-left font-semibold">Status</th>
-                                <th className="p-4 text-left font-semibold">Actions</th>
+                                <th className="p-4 text-left font-semibold">{t('member_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('book_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('type_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('amount_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('paid_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('remaining_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('status_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('actions_col')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200">
@@ -303,7 +314,7 @@ export default function FinesIndex({ fines, statistics, filters }: Props) {
                                         </td>
                                         <td className="p-4">
                                             <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusBadge(fine.status)}`}>
-                                                {fine.status}
+                                                {getStatusLabel(fine.status)}
                                             </span>
                                         </td>
                                         <td className="p-4">
@@ -312,7 +323,7 @@ export default function FinesIndex({ fines, statistics, filters }: Props) {
                                                     onClick={() => setSelectedFine(fine)}
                                                     className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
                                                 >
-                                                    Process Payment
+                                                    {t('process_payment_button')}
                                                 </button>
                                             )}
                                         </td>
@@ -327,6 +338,7 @@ export default function FinesIndex({ fines, statistics, filters }: Props) {
                     <PaymentModal
                         fine={selectedFine}
                         onClose={() => setSelectedFine(null)}
+                        t={t}
                     />
                 )}
             </div>

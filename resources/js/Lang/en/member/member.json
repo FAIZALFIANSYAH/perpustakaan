@@ -1,0 +1,16 @@
+{
+    "dashboard": "Member Dashboard",
+    "catalog": "Catalog",
+    "member_area": "Member Area",
+    "dashboard_description": "Monitor your active borrowings and return status.",
+    "view_history": "View History",
+    "active_borrowings": "Active Borrowings",
+    "borrowing_history": "Borrowing History",
+    "returned": "Returned",
+    "late_borrowings": "Late Borrowings",
+    "reservations": "Reservations",
+    "notifications": "Notifications",
+    "no_notifications": "There are currently no borrowing notifications.",
+    "active_borrowings_description": "List of borrowings that are still active for your account.",
+    "no_active_borrowings": "There are no active loans at the moment."
+}

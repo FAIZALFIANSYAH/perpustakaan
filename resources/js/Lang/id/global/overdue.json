@@ -1,0 +1,11 @@
+{
+    "overdue_borrowings_title": "Peminjaman Terlambat",
+    "overdue_borrowings_description": "Daftar peminjaman yang sudah melewati tanggal jatuh tempo.",
+    "borrow_code_col": "Kode Pinjam",
+    "due_date_col": "Tanggal Jatuh Tempo",
+    "days_late_col": "Terlambat",
+    "day_late_badge_one": "{{count}} hari",
+    "day_late_badge_other": "{{count}} hari",
+    "overdue_none_title": "Tidak ada peminjaman terlambat.",
+    "overdue_none_subtitle": "Semua aman!"
+}

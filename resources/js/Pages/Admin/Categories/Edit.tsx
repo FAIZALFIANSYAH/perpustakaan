@@ -1,5 +1,6 @@
 import React, { FormEventHandler } from 'react';
 import { useForm } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import CategoryForm from '@/Components/Categories/CategoryForm';
 import AdminLayout from '@/Layouts/AdminLayout';
 
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export default function Edit({ category }: Props) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors } = useForm({
         name: category.name ?? '',
     });
@@ -25,9 +27,9 @@ export default function Edit({ category }: Props) {
     return (
         <AdminLayout>
             <CategoryForm
-                title="Edit Category"
-                description="Perbarui nama kategori."
-                submitLabel="Update Category"
+                title={t('edit_category')}
+                description={t('edit_category_description')}
+                submitLabel={t('update_category')}
                 data={data}
                 setData={setData}
                 errors={errors}

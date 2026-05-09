@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import { BookOpen, Clock3, LayoutDashboard, Bookmark, DollarSign } from 'lucide-react';
 import UserDropdown from '@/Components/Layout/UserDropdown';
 
@@ -23,22 +24,23 @@ type Props = {
 };
 
 export default function MemberLayout({ children }: Props) {
+    const { t } = useTranslation();
     const { auth, flash } = usePage().props as PageProps;
     const user = auth?.user;
     const menus = [
-        { label: 'Dashboard', href: route('member.dashboard'), icon: LayoutDashboard },
-        { label: 'Borrowing History', href: route('member.borrowings.history'), icon: Clock3 },
-        { label: 'Catalog', href: route('member.catalog.index'), icon: BookOpen },
-        { label: 'Reservations', href: route('member.reservations.index'), icon: Bookmark },
-        { label: 'My Fines', href: route('member.fines.index'), icon: DollarSign },
+        { label: t('dashboard_menu'), href: route('member.dashboard'), icon: LayoutDashboard },
+        { label: t('borrowing_history'), href: route('member.borrowings.history'), icon: Clock3 },
+        { label: t('catalog'), href: route('member.catalog.index'), icon: BookOpen },
+        { label: t('reservations'), href: route('member.reservations.index'), icon: Bookmark },
+        { label: t('my_fines'), href: route('member.fines.index'), icon: DollarSign },
     ];
 
     return (
         <div className="min-h-screen bg-slate-100 flex">
             <aside className="w-64 bg-slate-900 text-white min-h-screen flex flex-col">
                 <div className="p-4 border-b border-slate-800">
-                    <div className="font-bold text-lg">Perpustakaan</div>
-                    <div className="text-xs text-slate-400">Member Area</div>
+                    <div className="font-bold text-lg">{t('app_name')}</div>
+                    <div className="text-xs text-slate-400">{t('member_area')}</div>
                 </div>
 
                 <nav className="flex-1 p-3 space-y-1">
@@ -60,7 +62,7 @@ export default function MemberLayout({ children }: Props) {
 
             <div className="flex-1 flex flex-col">
                 <header className="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
-                    <h1 className="text-xl font-semibold text-slate-900">Member Dashboard</h1>
+                    <h1 className="text-xl font-semibold text-slate-900">{t('dashboard')}</h1>
                     <UserDropdown profileRoute={route('member.profile.edit')} />
                 </header>
 

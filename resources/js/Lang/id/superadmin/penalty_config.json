@@ -1,0 +1,18 @@
+{
+    "penalty_configuration": "Konfigurasi Penalti",
+    "penalty_config_description": "Atur perilaku penalti tambahan untuk denda terlambat setelah masa tenggang.",
+    "enable_penalty_system": "Aktifkan Sistem Penalti",
+    "enable_penalty_system_help": "Terapkan pengganda saat terlambat melewati ambang batas.",
+    "configuration_active": "Konfigurasi Aktif",
+    "configuration_active_help": "Sistem menggunakan konfigurasi ini segera.",
+    "grace_period_penalty_days": "Hari Masa Tenggang Penalti",
+    "grace_period_penalty_days_help": "Penalti mulai berlaku hari ke-{{day}}.",
+    "penalty_multiplier": "Pengganda Penalti",
+    "penalty_multiplier_help": "Rentang yang diizinkan 1.00 - 10.00.",
+    "calculation_preview": "Pratinjau Perhitungan",
+    "base_fine": "Denda dasar",
+    "multiplier_label": "Pengganda",
+    "penalty_fine": "Denda penalti",
+    "save_penalty_config": "Simpan Konfigurasi Penalti",
+    "saving_button": "Menyimpan..."
+}

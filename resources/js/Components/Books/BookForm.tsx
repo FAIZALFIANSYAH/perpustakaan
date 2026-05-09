@@ -1,5 +1,6 @@
 import React, { FormEventHandler, useState, useEffect } from 'react';
 import { Link } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 
 type Category = {
     id: number;
@@ -54,6 +55,7 @@ export default function BookForm({
     backRoute = 'admin.books.index',
     initialCover = null,
 }: BookFormProps) {
+    const { t } = useTranslation();
     const [coverPreview, setCoverPreview] = useState<string | null>(
         initialCover ? (initialCover.startsWith('data:') || initialCover.startsWith('http') ? initialCover : initialCover.startsWith('/storage/') ? initialCover : `/storage/${initialCover}`) : null
     );
@@ -82,7 +84,7 @@ export default function BookForm({
         if (file) {
             const maxSizeBytes = 2 * 1024 * 1024;
             if (file.size > maxSizeBytes) {
-                setCoverClientError('Ukuran gambar melebihi 2MB. Pilih file yang lebih kecil.');
+                setCoverClientError(t('image_size_error'));
                 setData('cover', null);
                 e.target.value = '';
                 return;
@@ -92,7 +94,7 @@ export default function BookForm({
             setHasFileChanged(true);
             setData('cover', file);
             setCoverFileName(file.name);
-            
+
             // Create preview
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -121,20 +123,20 @@ export default function BookForm({
                     href={route(backRoute)}
                     className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                 >
-                    Back
+                    {t('back_button')}
                 </Link>
             </div>
 
             <form onSubmit={submit} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
                 <div className="grid gap-5 md:grid-cols-2">
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">Category</label>
+                        <label className="mb-2 block text-sm font-medium text-slate-700">{t('category_label')}</label>
                         <select
                             value={data.category_id}
                             onChange={(event) => setData('category_id', event.target.value)}
                             className="w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500"
                         >
-                            <option value="">Select category</option>
+                            <option value="">{t('select_category')}</option>
                             {categories.map((category) => (
                                 <option key={category.id} value={String(category.id)}>
                                     {category.name}
@@ -145,7 +147,7 @@ export default function BookForm({
                     </div>
 
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">Title</label>
+                        <label className="mb-2 block text-sm font-medium text-slate-700">{t('title_label')}</label>
                         <input
                             value={data.title}
                             onChange={(event) => setData('title', event.target.value)}
@@ -155,7 +157,7 @@ export default function BookForm({
                     </div>
 
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">Author</label>
+                        <label className="mb-2 block text-sm font-medium text-slate-700">{t('author_label')}</label>
                         <input
                             value={data.author}
                             onChange={(event) => setData('author', event.target.value)}
@@ -165,7 +167,7 @@ export default function BookForm({
                     </div>
 
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">Publisher</label>
+                        <label className="mb-2 block text-sm font-medium text-slate-700">{t('publisher_label')}</label>
                         <input
                             value={data.publisher}
                             onChange={(event) => setData('publisher', event.target.value)}
@@ -175,7 +177,7 @@ export default function BookForm({
                     </div>
 
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">ISBN</label>
+                        <label className="mb-2 block text-sm font-medium text-slate-700">{t('isbn_label')}</label>
                         <input
                             value={data.isbn}
                             onChange={(event) => setData('isbn', event.target.value)}
@@ -185,7 +187,7 @@ export default function BookForm({
                     </div>
 
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">Publish Year</label>
+                        <label className="mb-2 block text-sm font-medium text-slate-700">{t('publish_year_label')}</label>
                         <input
                             type="number"
                             value={data.publish_year}
@@ -196,7 +198,7 @@ export default function BookForm({
                     </div>
 
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700">Stock</label>
+                        <label className="mb-2 block text-sm font-medium text-slate-700">{t('stock_label')}</label>
                         <input
                             type="number"
                             min="0"
@@ -210,7 +212,7 @@ export default function BookForm({
                     </div>
 
                     <div className="md:col-span-2">
-                        <label className="mb-2 block text-sm font-medium text-slate-700">Cover Image</label>
+                        <label className="mb-2 block text-sm font-medium text-slate-700">{t('cover_image_label')}</label>
                         <div className="flex items-start gap-4">
                             <div className="flex-1">
                                 <input
@@ -219,9 +221,9 @@ export default function BookForm({
                                     onChange={handleCoverChange}
                                     className="w-full text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white file:hover:bg-slate-700"
                                 />
-                                <p className="mt-1 text-xs text-slate-500">Accepted formats: JPG, PNG, GIF, WebP (Max 2MB)</p>
+                                <p className="mt-1 text-xs text-slate-500">{t('accepted_formats')}</p>
                                 {coverFileName && (
-                                    <p className="mt-1 text-xs text-slate-700 font-medium">Selected: {coverFileName}</p>
+                                    <p className="mt-1 text-xs text-slate-700 font-medium">{t('selected_file')}: {coverFileName}</p>
                                 )}
                                 {coverClientError && <p className="mt-1 text-sm text-red-600">{coverClientError}</p>}
                                 <FieldError message={errors.cover} />
@@ -237,7 +239,7 @@ export default function BookForm({
                                         type="button"
                                         onClick={removeCover}
                                         className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center hover:bg-red-600 shadow-md"
-                                        title="Remove cover"
+                                        title={t('remove_cover')}
                                     >
                                         ×
                                     </button>
@@ -247,7 +249,7 @@ export default function BookForm({
                     </div>
 
                     <div className="md:col-span-2">
-                        <label className="mb-2 block text-sm font-medium text-slate-700">Description</label>
+                        <label className="mb-2 block text-sm font-medium text-slate-700">{t('description_label')}</label>
                         <textarea
                             value={data.description}
                             onChange={(event) => setData('description', event.target.value)}
@@ -265,7 +267,7 @@ export default function BookForm({
                                 onChange={(event) => setData('is_active', event.target.checked)}
                                 className="rounded border-slate-300 text-slate-900 shadow-sm focus:ring-slate-500"
                             />
-                            Active book
+                            {t('active_book_label')}
                         </label>
                         <FieldError message={errors.is_active} />
                     </div>
@@ -276,7 +278,7 @@ export default function BookForm({
                         href={route(backRoute)}
                         className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                     >
-                        Cancel
+                        {t('cancel_button')}
                     </Link>
 
                     <button
@@ -284,7 +286,7 @@ export default function BookForm({
                         disabled={processing}
                         className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        {processing ? 'Saving...' : submitLabel}
+                        {processing ? t('saving_button') : submitLabel}
                     </button>
                 </div>
             </form>

@@ -1,9 +1,11 @@
 import React, { FormEventHandler } from 'react';
 import { useForm } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import CategoryForm from '@/Components/Categories/CategoryForm';
 import AdminLayout from '@/Layouts/AdminLayout';
 
 export default function Create() {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors } = useForm({
         name: '',
     });
@@ -16,9 +18,9 @@ export default function Create() {
     return (
         <AdminLayout>
             <CategoryForm
-                title="Create Category"
-                description="Tambah kategori baru untuk klasifikasi buku."
-                submitLabel="Save Category"
+                title={t('create_category')}
+                description={t('create_category_description')}
+                submitLabel={t('save_category')}
                 data={data}
                 setData={setData}
                 errors={errors}

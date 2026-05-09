@@ -1,5 +1,6 @@
 import React from 'react';
 import { Head, usePage } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { BookOpen, Users, ClipboardList, AlertTriangle, Clock3, RotateCcw } from 'lucide-react';
 
@@ -77,43 +78,44 @@ function StatCard({ title, value, icon: Icon, tone }: StatCardProps) {
 }
 
 export default function Dashboard({ summary, recentBorrowings }: Props) {
+    const { t } = useTranslation();
     const { auth } = usePage().props as PageProps;
     const user = auth?.user;
 
     return (
         <AdminLayout>
-            <Head title="Admin Dashboard" />
+            <Head title={t('admin_dashboard')} />
             <div className="space-y-6">
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-900">Welcome, {user?.name ?? 'Super Admin'}</h2>
-                    <p className="text-slate-500">Sistem Informasi Perpustakaan - Panel Administrator</p>
+                    <h2 className="text-2xl font-bold text-slate-900">{t('welcome')}, {user?.name ?? t('super_admin')}</h2>
+                    <p className="text-slate-500">{t('admin_subtitle')}</p>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    <StatCard title="Total Books" value={summary.total_books} icon={BookOpen} tone="bg-slate-100 text-slate-700" />
-                    <StatCard title="Total Members" value={summary.total_members} icon={Users} tone="bg-blue-100 text-blue-700" />
-                    <StatCard title="Total Borrowings" value={summary.total_borrowings} icon={ClipboardList} tone="bg-emerald-100 text-emerald-700" />
-                    <StatCard title="Active Borrowings" value={summary.borrowed_active} icon={Clock3} tone="bg-amber-100 text-amber-700" />
-                    <StatCard title="Returned Total" value={summary.returned_total} icon={RotateCcw} tone="bg-violet-100 text-violet-700" />
-                    <StatCard title="Late Borrowings" value={summary.late_borrowings} icon={AlertTriangle} tone="bg-rose-100 text-rose-700" />
+                    <StatCard title={t('total_books')} value={summary.total_books} icon={BookOpen} tone="bg-slate-100 text-slate-700" />
+                    <StatCard title={t('total_members')} value={summary.total_members} icon={Users} tone="bg-blue-100 text-blue-700" />
+                    <StatCard title={t('total_borrowings')} value={summary.total_borrowings} icon={ClipboardList} tone="bg-emerald-100 text-emerald-700" />
+                    <StatCard title={t('active_borrowings')} value={summary.borrowed_active} icon={Clock3} tone="bg-amber-100 text-amber-700" />
+                    <StatCard title={t('returned_total')} value={summary.returned_total} icon={RotateCcw} tone="bg-violet-100 text-violet-700" />
+                    <StatCard title={t('late_borrowings')} value={summary.late_borrowings} icon={AlertTriangle} tone="bg-rose-100 text-rose-700" />
                 </div>
 
                 <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
                     <div className="border-b border-slate-200 p-6">
-                        <h3 className="text-lg font-semibold text-slate-900">Recent Borrowings</h3>
-                        <p className="mt-1 text-sm text-slate-500">Daftar transaksi peminjaman terbaru.</p>
+                        <h3 className="text-lg font-semibold text-slate-900">{t('recent_borrowings')}</h3>
+                        <p className="mt-1 text-sm text-slate-500">{t('recent_borrowings_description')}</p>
                     </div>
 
                     <table className="w-full text-sm">
                         <thead className="bg-slate-50 text-slate-600">
                             <tr>
-                                <th className="p-4 text-left font-semibold">Code</th>
-                                <th className="p-4 text-left font-semibold">Member</th>
-                                <th className="p-4 text-left font-semibold">Books</th>
-                                <th className="p-4 text-left font-semibold">Borrowed</th>
-                                <th className="p-4 text-left font-semibold">Due</th>
-                                <th className="p-4 text-left font-semibold">Status</th>
-                                <th className="p-4 text-left font-semibold">Processed By</th>
+                                <th className="p-4 text-left font-semibold">{t('code')}</th>
+                                <th className="p-4 text-left font-semibold">{t('member_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('books')}</th>
+                                <th className="p-4 text-left font-semibold">{t('borrowed')}</th>
+                                <th className="p-4 text-left font-semibold">{t('due_col')}</th>
+                                <th className="p-4 text-left font-semibold">{t('status')}</th>
+                                <th className="p-4 text-left font-semibold">{t('processed_by_col')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200">
@@ -150,7 +152,7 @@ export default function Dashboard({ summary, recentBorrowings }: Props) {
                             ) : (
                                 <tr>
                                     <td colSpan={7} className="p-8 text-center text-slate-500">
-                                        Belum ada data peminjaman
+                                        {t('no_borrowings_data')}
                                     </td>
                                 </tr>
                             )}
