@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\OverdueFineService;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+//use Illuminate\Http\Response;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class OverdueFineController extends Controller
 {

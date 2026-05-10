@@ -45,160 +45,169 @@ export default function Sidebar({ collapsed }: Props) {
     const menus = [
         ...(isSuperAdmin
             ? [
-                  {
-                      label: t('dashboard_menu'),
-                      icon: Home,
-                      href: '/admin/dashboard',
-                  },
-              ]
+                {
+                    label: t('dashboard_menu'),
+                    icon: Home,
+                    href: '/admin/dashboard',
+                },
+            ]
             : []),
 
         ...(isSuperAdmin
             ? [
-                  {
-                      label: t('categories'),
-                      icon: Tag,
-                      href: '/admin/categories',
-                  },
-              ]
+                {
+                    label: t('categories'),
+                    icon: Tag,
+                    href: '/admin/categories',
+                },
+            ]
             : []),
 
         ...(isSuperAdmin
             ? [
-                  {
-                      label: t('books'),
-                      icon: BookOpen,
-                      href: '/admin/books',
-                  },
-              ]
+                {
+                    label: t('books'),
+                    icon: BookOpen,
+                    href: '/admin/books',
+                },
+            ]
             : []),
 
         ...(isSuperAdmin
             ? [
-                  {
-                      label: t('borrowings'),
-                      icon: ClipboardList,
-                      href: '/admin/borrowings',
-                  },
-              ]
+                {
+                    label: t('borrowings'),
+                    icon: ClipboardList,
+                    href: '/admin/borrowings',
+                },
+            ]
             : []),
 
         ...(isSuperAdmin
             ? [
-                  {
-                      label: t('fines'),
-                      icon: DollarSign,
-                      href: '/admin/fines',
-                  },
-              ]
+                {
+                    label: t('fines'),
+                    icon: DollarSign,
+                    href: '/admin/fines',
+                },
+            ]
             : []),
 
         ...(isSuperAdmin
             ? [
-                  {
-                      label: t('fine_config'),
-                      icon: Settings,
-                      href: '/admin/fine-config',
-                  },
-              ]
+                {
+                    label: t('fine_config'),
+                    icon: Settings,
+                    href: '/admin/fine-config',
+                },
+            ]
             : []),
 
         ...(isSuperAdmin
             ? [
-                  {
-                      label: t('penalty_config'),
-                      icon: Settings,
-                      href: '/penalty-config',
-                  },
-              ]
+                {
+                    label: t('overdue_fines'),
+                    icon: Settings,
+                    href: '/admin/overdue-fines',
+                },
+            ]
             : []),
 
         ...(isSuperAdmin
             ? [
-                  {
-                      label: t('users'),
-                      icon: Users,
-                      href: '/admin/users',
-                  },
-              ]
+                {
+                    label: t('penalty_config'),
+                    icon: Settings,
+                    href: '/penalty-config',
+                },
+            ]
             : []),
 
         ...(isSuperAdmin
             ? [
-                  {
-                      label: t('reports'),
-                      icon: FileBarChart2,
-                      href: '/admin/reports',
-                  },
-              ]
+                {
+                    label: t('users'),
+                    icon: Users,
+                    href: '/admin/users',
+                },
+            ]
+            : []),
+
+        ...(isSuperAdmin
+            ? [
+                {
+                    label: t('reports'),
+                    icon: FileBarChart2,
+                    href: '/admin/reports',
+                },
+            ]
             : []),
 
         ...(isLibrarian
             ? [
-                  {
-                      label: t('dashboard_menu'),
-                      icon: Home,
-                      href: '/librarian/dashboard',
-                  },
-              ]
+                {
+                    label: t('dashboard_menu'),
+                    icon: Home,
+                    href: '/librarian/dashboard',
+                },
+            ]
             : []),
 
         ...(isLibrarian
             ? [
-                  {
-                      label: t('books'),
-                      icon: BookOpen,
-                      href: '/librarian/books',
-                  },
-              ]
+                {
+                    label: t('books'),
+                    icon: BookOpen,
+                    href: '/librarian/books',
+                },
+            ]
             : []),
 
         ...(isLibrarian
             ? [
-                  {
-                      label: t('borrowings'),
-                      icon: ClipboardList,
-                      href: '/librarian/borrowings',
-                  },
-              ]
+                {
+                    label: t('borrowings'),
+                    icon: ClipboardList,
+                    href: '/librarian/borrowings',
+                },
+            ]
             : []),
 
         ...(isLibrarian
             ? [
-                  {
-                      label: t('fines'),
-                      icon: DollarSign,
-                      href: '/librarian/fines',
-                  },
-              ]
+                {
+                    label: t('fines'),
+                    icon: DollarSign,
+                    href: '/librarian/fines',
+                },
+            ]
             : []),
 
         ...(isLibrarian
             ? [
-                  {
-                      label: t('categories'),
-                      icon: Tag,
-                      href: '/librarian/categories',
-                  },
-              ]
+                {
+                    label: t('categories'),
+                    icon: Tag,
+                    href: '/librarian/categories',
+                },
+            ]
             : []),
 
         ...(isLibrarian
             ? [
-                  {
-                      label: t('reports'),
-                      icon: FileBarChart2,
-                      href: '/librarian/reports',
-                  },
-              ]
+                {
+                    label: t('reports'),
+                    icon: FileBarChart2,
+                    href: '/librarian/reports',
+                },
+            ]
             : []),
     ];
 
     return (
         <aside
-            className={`${
-                collapsed ? 'w-20' : 'w-64'
-            } min-h-screen bg-slate-900 text-white transition-all duration-300 flex flex-col`}
+            className={`${collapsed ? 'w-20' : 'w-64'
+                } min-h-screen bg-slate-900 text-white transition-all duration-300 flex flex-col`}
         >
             <div className="border-b border-slate-800 p-4 text-lg font-bold">
                 {collapsed ? t('app_name_short') : t('app_name')}
@@ -224,18 +233,16 @@ export default function Sidebar({ collapsed }: Props) {
 
             <div className="border-t border-slate-800 p-3">
                 <div
-                    className={`flex items-center gap-3 rounded-xl bg-slate-800/50 px-3 py-2.5 ${
-                        collapsed ? 'justify-center' : ''
-                    }`}
+                    className={`flex items-center gap-3 rounded-xl bg-slate-800/50 px-3 py-2.5 ${collapsed ? 'justify-center' : ''
+                        }`}
                 >
                     <div
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                            isSuperAdmin
-                                ? 'bg-emerald-500 text-white'
-                                : isLibrarian
-                                  ? 'bg-blue-500 text-white'
-                                  : 'bg-slate-600 text-white'
-                        }`}
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${isSuperAdmin
+                            ? 'bg-emerald-500 text-white'
+                            : isLibrarian
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-slate-600 text-white'
+                            }`}
                     >
                         {user?.name?.charAt(0).toUpperCase() ?? 'U'}
                     </div>
@@ -247,19 +254,18 @@ export default function Sidebar({ collapsed }: Props) {
                             </div>
 
                             <div
-                                className={`text-[10px] font-semibold uppercase tracking-wider ${
-                                    isSuperAdmin
-                                        ? 'text-emerald-400'
-                                        : isLibrarian
-                                          ? 'text-blue-400'
-                                          : 'text-slate-400'
-                                }`}
+                                className={`text-[10px] font-semibold uppercase tracking-wider ${isSuperAdmin
+                                    ? 'text-emerald-400'
+                                    : isLibrarian
+                                        ? 'text-blue-400'
+                                        : 'text-slate-400'
+                                    }`}
                             >
                                 {isSuperAdmin
                                     ? t('role_super_admin')
                                     : isLibrarian
-                                      ? t('role_librarian')
-                                      : t('role_member')}
+                                        ? t('role_librarian')
+                                        : t('role_member')}
                             </div>
                         </div>
                     )}
